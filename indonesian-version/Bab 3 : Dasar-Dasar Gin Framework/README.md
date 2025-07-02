@@ -31,7 +31,7 @@ func main() {
 }
 ```
 
-Baris r := gin.Default() adalah titik awal aplikasi Gin, dengan keterangan berikut :
+Baris `r := gin.Default()` adalah titik awal aplikasi Gin, dengan keterangan berikut :
 1. `gin.Default()` : Ini adalah fungsi yang mengembalikan instance dari `*gin.Engine`. `*gin.Engine` adalah objek utama yang akan digunakan untuk mendefinisikan rute, middleware, dan menjalankan server. `Default()` secara otomatis menyertakan dua middleware bawaan yang sangat berguna :
    - Logger : Menampilkan log dari setiap permintaan yang masuk ke konsol, sangat membantu untuk debugging.
     - Recovery : Menangkap panic (kesalahan runtime) yang mungkin terjadi selama pemrosesan permintaan, sehingga server tidak crash sepenuhnya dan bisa mengirimkan respons error yang sesuai ke klien.
@@ -134,6 +134,7 @@ Setiap permintaan HTTP memiliki metode atau verb yang menunjukkan jenis operasi 
 
 Metode GET digunakan untuk meminta data dari sumber daya tertentu. Ini adalah metode yang paling umum digunakan dan biasanya digunakan untuk mengambil halaman web, gambar, atau data API.
 
+3.2.1.1-1.TryGet.go
 ```go
 package main
 
@@ -144,20 +145,28 @@ import (
 
 func main() {
     router := gin.Default()
-    // Mendefinisikan route untuk metode GET di path "/welcome"
     router.GET("/welcome", func(c *gin.Context) {
         c.JSON(http.StatusOK, gin.H{
-            "message": "Selamat datang di server Gin!",
+            "message": "Welcome to Server Gin!",
         })
     })
     router.Run(":8080")
 }
 ```
-Jadi ketika 
 
-#### 3.2.1.2 POST Method
+Kode di atas akan bermakna, jika server mendapatkan `/welcome` pada browser maka server akan mengirmkan JSON message dengan status OK dan isi pada key `message` akan berisi `Welcome to Server Gin!`. Coba untuk run :
 
-Metode POST digunakan untuk mengirim data dari pengguna ke server untuk membuat sumber daya baru. Data yang dikirim biasanya berada di dalam body dari permintaan (request body).
+```bash
+$ go run 3.2.1.1-1.TryGet.go
+```
+
+Ketika di akses dengan menggunakan URL `localhost:8080/welcome` akan mengeluarkan  :
+
+
+
+Kita akan coba dengan men**ambah GET dengan routing `/checkserver' :
+
+3.2.1.1-2.TryGet.go
 
 ```go
 package main
@@ -169,9 +178,77 @@ import (
 
 func main() {
     router := gin.Default()
-    // Mendefinisikan route untuk metode POST di path "/users"
-    router.POST("/users", func(c *gin.Context) {
+    router.GET("/welcome", func(c *gin.Context) {
+        c.JSON(http.StatusOK, gin.H{
+            "message": "Welcome to Server Gin!",
+        })
+    })
+
+    router.GET("/checkserver", func(c *gin.Context) {
+        c.JSON(http.StatusOK, gin.H{
+            "message": "Server is running well!",
+        })
+    })
+    
+    router.Run(":8080")
+}
+```
+
+Jika akses di browser antara `localhost:8080/welcome` dan `localhost:8080/checkserver` maka pasti akan berbeda output yang di keluarkan :
+
+Contoh kasus nyatanya lagi meminta data berdasarkan pada sebuah ID, kita panggil dengan penggunaan URL `localhost:8080/users/1` dengan kode :
+
+3.2.1.1-3.TryGet.go
+
+```go
+package main
+
+import (
+    "net/http"
+    "github.com/gin-gonic/gin"
+)
+
+func main() {
+    router := gin.Default()
+    // Mendefinisikan route dengan parameter dinamis :id
+    router.GET("/users/:id", func(c *gin.Context) {
+        // Mengambil nilai dari parameter 'id' dari URL
+        id := c.Param("id")
+        c.JSON(http.StatusOK, gin.H{
+            "message": "Mengambil data user dengan ID: " + id,
+        })
+    })
+    router.Run(":8080")
+}
+```
+
+Maka ketika di panggil dengan `localhost:8080/user/1` maka akan menjawab :
+
+
+
+Dan disitulah, dengan uji coba code di atas dapat menjelasakan dari GET Method. Untuk source cdoe bisa di lihat di []() dan []()
+
+#### 3.2.1.2 POST Method
+
+Metode POST digunakan untuk mengirim data dari pengguna ke server untuk membuat sumber daya baru. Data yang dikirim biasanya berada di dalam body dari permintaan (request body). 
+
+> Keterangan : Pengujian POST memerlukan tools khusus seperti `cURL`, Postman, atau Insomnia untuk mengirim permintaan.
+
+3.2.1.2-1.TryPost.go
+```go
+package main
+
+import (
+    "net/http"
+    "github.com/gin-gonic/gin"
+)
+
+func main() {
+    router := gin.Default()
+    // Mendefinisikan route untuk metode POST di path "/create-user"
+    router.POST("/create-user", func(c *gin.Context) {
         // Logika untuk membuat user baru akan ada di sini
+        // Untuk saat ini, kita hanya mengirim respons konfirmasi
         c.JSON(http.StatusCreated, gin.H{
             "message": "User berhasil dibuat.",
         })
@@ -180,10 +257,78 @@ func main() {
 }
 ```
 
+Kode di atas akan membuat sebuah endpoint `/create-user` yang hanya menerima metode POST. Jika endpoint ini diakses dengan metode POST, server akan merespons dengan status `201 Created` dan sebuah pesan JSON.
+
+Jalankan server :
+
+```bash
+$ go run 3.2.1.2-1.TryPost.go
+```
+
+Untuk mengujinya, gunakan `cURL` di terminal :
+
+```bash
+$ curl -X POST http://localhost:8080/create-user
+```
+
+Anda akan mendapatkan output JSON berikut :
+
+```json
+{"message":"User berhasil dibuat."}
+```
+
+Sama seperti GET, kita bisa mendefinisikan beberapa route POST dalam satu aplikasi.
+
+3.2.1.2-2.TryPost.go
+```go
+package main
+
+import (
+    "net/http"
+    "github.com/gin-gonic/gin"
+)
+
+func main() {
+    router := gin.Default()
+    
+    router.POST("/create-user", func(c *gin.Context) {
+        c.JSON(http.StatusCreated, gin.H{
+            "message": "User berhasil dibuat.",
+        })
+    })
+
+    router.POST("/create-product", func(c *gin.Context) {
+        c.JSON(http.StatusCreated, gin.H{
+            "message": "Produk berhasil dibuat.",
+        })
+    })
+    
+    router.Run(":8080")
+}
+```
+
+Sekarang, jika Anda menjalankan kode di atas dan mengirim permintaan POST ke endpoint yang berbeda, Anda akan mendapatkan respons yang berbeda pula.
+
+Uji endpoint `/create-product` :
+```bash
+$ curl -X POST http://localhost:8080/create-product
+```
+
+Output :
+
+```json
+{"message":"Produk berhasil dibuat."}
+```
+
+Ini menunjukkan bagaimana Gin dapat dengan mudah memetakan permintaan POST ke handler yang berbeda berdasarkan path URL. Untuk source code bisa dilihat di []() dan []().
+
 #### 3.2.1.3 PUT Method
 
 Metode PUT digunakan untuk memperbarui sumber daya yang sudah ada di server. Biasanya, permintaan PUT menyertakan ID dari sumber daya yang akan diubah di URL dan data baru di dalam request body.
 
+> Keterangan : Sama seperti POST, pengujian PUT memerlukan tools khusus seperti `cURL`, Postman, atau Insomnia.
+
+3.2.1.3-1.TryPut.go
 ```go
 package main
 
@@ -195,10 +340,10 @@ import (
 func main() {
     router := gin.Default()
     // Mendefinisikan route untuk metode PUT di path "/users/:id"
-    // :id adalah parameter dinamis
+    // :id adalah parameter dinamis yang bisa diambil dari URL
     router.PUT("/users/:id", func(c *gin.Context) {
-        id := c.Param("id") // Mengambil ID dari URL
-        // Logika untuk memperbarui user dengan ID tertentu
+        id := c.Param("id") // Mengambil nilai parameter "id" dari URL
+        // Logika untuk memperbarui user dengan ID tertentu akan ada di sini
         c.JSON(http.StatusOK, gin.H{
             "message": "User dengan ID " + id + " berhasil diperbarui.",
         })
@@ -206,6 +351,64 @@ func main() {
     router.Run(":8080")
 }
 ```
+Kode di atas mendefinisikan endpoint `/users/:id` yang merespons metode PUT. Bagian `:id` adalah *route parameter* yang memungkinkan URL menjadi dinamis. Nilai dari `id` bisa diambil menggunakan `c.Param("id")`.
+
+Jalankan server:
+```bash
+$ go run 3.2.1.3-1.TryPut.go
+```
+
+Untuk mengujinya, gunakan `cURL` dan berikan ID user yang ingin di-update, misalnya `123`:
+```bash
+$ curl -X PUT http://localhost:8080/users/123
+```
+
+Anda akan mendapatkan output JSON berikut:
+```json
+{"message":"User dengan ID 123 berhasil diperbarui."}
+```
+
+Kita juga bisa memiliki beberapa route PUT yang berbeda.
+
+3.2.1.3-2.TryPut.go
+```go
+package main
+
+import (
+    "net/http"
+    "github.com/gin-gonic/gin"
+)
+
+func main() {
+    router := gin.Default()
+    
+    router.PUT("/users/:id", func(c *gin.Context) {
+        id := c.Param("id")
+        c.JSON(http.StatusOK, gin.H{
+            "message": "User dengan ID " + id + " berhasil diperbarui.",
+        })
+    })
+
+    router.PUT("/products/:productId", func(c *gin.Context) {
+        productId := c.Param("productId")
+        c.JSON(http.StatusOK, gin.H{
+            "message": "Produk dengan ID " + productId + " berhasil diperbarui.",
+        })
+    })
+    
+    router.Run(":8080")
+}
+```
+Uji endpoint `/products/:productId`:
+```bash
+$ curl -X PUT http://localhost:8080/products/abc-456
+```
+
+Output:
+```json
+{"message":"Produk dengan ID abc-456 berhasil diperbarui."}
+```
+Ini menunjukkan fleksibilitas Gin dalam menangani pembaruan data untuk berbagai jenis sumber daya. Untuk source code bisa dilihat di []() dan []().
 
 #### 3.2.1.4 DELETE Method
 
@@ -233,12 +436,12 @@ func main() {
 }
 ```
 
-
-### 3.2.2 Route Parameters dan ery parameters
+### 3.2.2 Route Parameters dan Query parameters
 
 Seringkali, kita perlu menangani permintaan yang bervariasi berdasarkan data spesifik dalam URL. Gin menyediakan dua cara utama untuk menangani ini yaitu Route Parameters dan Query Parameters.
 
 #### 3.2.2.1 Route Parameters
+
 
 #### 3.2.2.2 Query Parameters
 

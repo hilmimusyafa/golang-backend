@@ -1,6 +1,6 @@
 # Bab 2 : Persiapan Percobaan
 
-Pada bab ini, kita akan mempersiapkan lingkungan pengembangan untuk percobaan menggunakan bahasa pemrograman Go. Pastikan Anda telah menginstal Go di sistem Anda. Jika belum, silakan merujuk ke [dokumentasi resmi Go](https://golang.org/doc/install) untuk panduan instalasi.
+Pada bab ini, kita akan mempersiapkan lingkungan pengembangan untuk percobaan menggunakan bahasa pemrograman Go. Pastikan telah menginstal Go di sistem. Jika belum, silakan merujuk ke [dokumentasi resmi Go](https://golang.org/doc/install) untuk panduan instalasi.
 
 ## 2.1 Instalasi dan Setup Gin
 
@@ -38,7 +38,7 @@ Gin adalah web framework yang ditulis dalam bahasa Go. Framework ini dirancang u
 
 ### 2.1.2 Struktur Project Backend yang Baik
 
-Untuk project backend yang scalable dan maintainable, berikut adalah struktur folder yang direkomendasikan:
+Untuk project backend yang scalable dan maintainable, berikut adalah struktur folder yang direkomendasikan :
 
 ```
 golang-backend/
@@ -102,8 +102,6 @@ golang-backend/
 
 Mari buat aplikasi Gin pertama kita dengan struktur yang sederhana:
 
-#### Langkah 1 : Buat file main.go
-
 ```go
 package main
 
@@ -130,22 +128,6 @@ func main() {
 }
 ```
 
-#### Langkah 2 : Membuat Struktur Folder Dasar
-
-Untuk memulai, buat struktur folder sederhana :
-
-```
-.
-├── go.mod
-├── go.sum
-├── main.go
-├── chapter1/
-│   ├── basic_http_server.go
-│   └── gin_server.go
-├── chapter2/
-└── README.md
-```
-
 ### 2.1.4 Menjalankan Server
 
 1. Untuk menjalankan aplikasi Gin pertama Anda :
@@ -168,24 +150,28 @@ Untuk memulai, buat struktur folder sederhana :
 
 ### 2.1.5 Testing Endpoints
 
-Setelah server berjalan, Anda dapat menguji endpoint berikut:
+Setelah server berjalan, Anda dapat menguji endpoint berikut :
 
-1. **GET Route dasar:**
+1. **GET Route dasar**
+   
    ```bash
    curl http://localhost:8080/
    ```
 
-2. **GET dengan parameter:**
+2. **GET dengan parameter**
+   
    ```bash
    curl http://localhost:8080/hello/John
    ```
 
-3. **GET dengan query parameter:**
+3. **GET dengan query parameter**
+   
    ```bash
    curl "http://localhost:8080/search?q=golang"
    ```
 
 4. **POST untuk membuat user:**
+   
    ```bash
    curl -X POST http://localhost:8080/users \
      -H "Content-Type: application/json" \
@@ -194,7 +180,7 @@ Setelah server berjalan, Anda dapat menguji endpoint berikut:
 
 ## 2.2 Clone Repository (Opsional)
 
-Jika Anda ingin menggunakan repository yang sudah ada, Anda dapat meng-clone repository berikut:
+Jika Anda ingin menggunakan repository yang sudah ada, Anda dapat meng-clone repository berikut :
 
 ```bash
 $ git clone https://github.com/hilmimusyafa/golang-backend.git
@@ -209,16 +195,16 @@ $ cd golang-backend
 - Untuk production, pastikan untuk menggunakan `gin.SetMode(gin.ReleaseMode)` untuk performance yang optimal.
 - Jika Anda mengalami masalah, periksa dokumentasi resmi Go dan Gin Framework untuk solusi lebih lanjut.
 
-### Tips Development:
+### Tips Development
 
-1. Hot Reload dengan Air :
+1. Hot Reload dengan Air
    
    ```bash
    $ go install github.com/cosmtrek/air@latest
    $ air
    ```
 
-2. Environment Variables : 
+2. Environment Variables 
    
    Gunakan package seperti `godotenv` untuk mengelola environment variables :
    
@@ -226,7 +212,7 @@ $ cd golang-backend
    $ go get github.com/joho/godotenv
    ```
 
-3. Middleware yang Berguna :
+3. Middleware yang Berguna
    
    - CORS : `github.com/gin-contrib/cors`
    - Logger : Built-in di Gin
