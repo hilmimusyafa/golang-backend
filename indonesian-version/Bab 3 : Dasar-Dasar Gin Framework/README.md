@@ -21,7 +21,7 @@ Setiap aplikasi Go memerlukan package yang relevan untuk fungsionalitasnya. `net
 
 Sementara itu, `github.com/gin-gonic/gin` adalah package Gin itu sendiri, yang berisi semua tools dan fungsi yang diperlukan untuk membangun API dengan Gin.
 
-### 3.1.2 Iinsialisasi Gin Engine
+### 3.1.2 Inisialisasi Gin Engine
 
 ```go
 func main() {
@@ -55,7 +55,7 @@ func main() {
 
 Untuk memahami kode dasar Go Gin bisa menggunakan kode dasar ini :
 
-3.2-test.go
+3.2-BasicGin.go
 
 ```go
 package main
@@ -82,6 +82,7 @@ func main() {
     r.Run(":8080")
 }
 ```
+
 Jalankan dengaan menggunakan perintah : 
 
 ```bash
@@ -90,13 +91,13 @@ $ go run 3.2-BasicGin.go
 Lalu buka browser dengan URL :
 
 ```url
-localhost:port
+localhost:port/
 ```
 
-atau karena port tadi yang di code adalah 8080 :
+atau karena port yang ada di code adalah `8080` :
 
 ```
-localhost:8080
+localhost:8080/
 ```
 
 Maka akan keluar dengan di browser seperti yang ada di gambar : 
@@ -123,7 +124,6 @@ Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-
 
 Test telah berhasil, terlihat terdapat transaksi, dan di repository sudah di sediakan source code tinggal buka [3.2-BasicGin.go]()
 
-
 ## 3.3 Routing
 
 ### 3.3.1 Basic routing (GET, POST, PUT, DELETE)
@@ -135,6 +135,7 @@ Setiap permintaan HTTP memiliki metode atau verb yang menunjukkan jenis operasi 
 Metode GET digunakan untuk meminta data dari sumber daya tertentu. Ini adalah metode yang paling umum digunakan dan biasanya digunakan untuk mengambil halaman web, gambar, atau data API.
 
 3.2.1.1-1.TryGet.go
+
 ```go
 package main
 
@@ -164,7 +165,7 @@ Ketika di akses dengan menggunakan URL `localhost:8080/welcome` akan mengeluarka
 
 
 
-Kita akan coba dengan men**ambah GET dengan routing `/checkserver' :
+Kita akan coba dengan menambah GET dengan routing `/checkserver' :
 
 3.2.1.1-2.TryGet.go
 
@@ -196,7 +197,7 @@ func main() {
 
 Jika akses di browser antara `localhost:8080/welcome` dan `localhost:8080/checkserver` maka pasti akan berbeda output yang di keluarkan :
 
-Contoh kasus nyatanya lagi meminta data berdasarkan pada sebuah ID, kita panggil dengan penggunaan URL `localhost:8080/users/1` dengan kode :
+Contoh kasus nyata lagi meminta data berdasarkan pada sebuah ID, kita panggil dengan penggunaan URL `localhost:8080/users/1` dengan kode :
 
 3.2.1.1-3.TryGet.go
 
@@ -235,6 +236,7 @@ Metode POST digunakan untuk mengirim data dari pengguna ke server untuk membuat 
 > Keterangan : Pengujian POST memerlukan tools khusus seperti `cURL`, Postman, atau Insomnia untuk mengirim permintaan.
 
 3.2.1.2-1.TryPost.go
+
 ```go
 package main
 
@@ -247,7 +249,7 @@ func main() {
     router := gin.Default()
     // Mendefinisikan route untuk metode POST di path "/create-user"
     router.POST("/create-user", func(c *gin.Context) {
-        // Logika untuk membuat user baru akan ada di sini
+        // ... Logika untuk membuat user baru akan ada di sini ...
         // Untuk saat ini, kita hanya mengirim respons konfirmasi
         c.JSON(http.StatusCreated, gin.H{
             "message": "User berhasil dibuat.",
@@ -280,6 +282,7 @@ Anda akan mendapatkan output JSON berikut :
 Sama seperti GET, kita bisa mendefinisikan beberapa route POST dalam satu aplikasi.
 
 3.2.1.2-2.TryPost.go
+
 ```go
 package main
 
@@ -363,7 +366,7 @@ Untuk mengujinya, gunakan `cURL` dan berikan ID user yang ingin di-update, misal
 $ curl -X PUT http://localhost:8080/users/123
 ```
 
-Anda akan mendapatkan output JSON berikut:
+Anda akan mendapatkan output JSON berikut :
 ```json
 {"message":"User dengan ID 123 berhasil diperbarui."}
 ```
@@ -408,11 +411,16 @@ Output:
 ```json
 {"message":"Produk dengan ID abc-456 berhasil diperbarui."}
 ```
+
 Ini menunjukkan fleksibilitas Gin dalam menangani pembaruan data untuk berbagai jenis sumber daya. Untuk source code bisa dilihat di []() dan []().
 
 #### 3.2.1.4 DELETE Method
 
-Metode DELETE digunakan untuk menghapus sumber daya tertentu dari server. Sama seperti PUT, permintaan DELETE biasanya menyertakan ID dari sumber daya yang akan dihapus di URL.
+Metode DELETE digunakan untuk menghapus sumber daya tertentu dari server. Sama seperti PUT, permintaan DELETE biasanya menyertakan ID dari sumber daya yang akan dihapus di URL. Endpoint DELETE sangat umum digunakan pada API untuk menghapus data berdasarkan parameter unik, seperti ID.
+
+Contoh implementasi endpoint DELETE pada Gin :
+
+3.2.1.4-1.TryDelete.go
 
 ```go
 package main
@@ -436,16 +444,157 @@ func main() {
 }
 ```
 
+Jalankan server dengan perintah berikutb :
+
+```bash
+$ go run 3.2.1.4-1.TryDelete.go
+```
+
+Untuk menguji endpoint DELETE, gunakan `cURL` di terminal:
+
+```bash
+$ curl -X DELETE http://localhost:8080/users/42
+```
+
+Output yang dihasilkan:
+
+```json
+{"message":"User dengan ID 42 berhasil dihapus."}
+```
+
+Anda juga dapat menambahkan beberapa endpoint DELETE untuk sumber daya lain, misalnya produk:
+
+3.2.1.4-2.TryDelete.go
+
+```go
+package main
+
+import (
+    "net/http"
+    "github.com/gin-gonic/gin"
+)
+
+func main() {
+    router := gin.Default()
+    
+    router.DELETE("/users/:id", func(c *gin.Context) {
+        id := c.Param("id")
+        c.JSON(http.StatusOK, gin.H{
+            "message": "User dengan ID " + id + " berhasil dihapus.",
+        })
+    })
+
+    router.DELETE("/products/:productId", func(c *gin.Context) {
+        productId := c.Param("productId")
+        c.JSON(http.StatusOK, gin.H{
+            "message": "Produk dengan ID " + productId + " berhasil dihapus.",
+        })
+    })
+    
+    router.Run(":8080")
+}
+```
+
+Uji endpoint `/products/:productId`:
+
+```bash
+$ curl -X DELETE http://localhost:8080/products/abc-123
+```
+
+Output:
+
+```json
+{"message":"Produk dengan ID abc-123 berhasil dihapus."}
+```
+
+Dengan demikian, Gin memudahkan pembuatan endpoint DELETE untuk berbagai jenis sumber daya. Untuk source code lengkap dapat dilihat di []() dan []().
+
 ### 3.2.2 Route Parameters dan Query parameters
 
 Seringkali, kita perlu menangani permintaan yang bervariasi berdasarkan data spesifik dalam URL. Gin menyediakan dua cara utama untuk menangani ini yaitu Route Parameters dan Query Parameters.
 
 #### 3.2.2.1 Route Parameters
 
+Route parameters adalah bagian dari URL yang memungkinkan kita menangkap nilai dinamis pada path tertentu. Biasanya, route parameters didefinisikan dengan awalan titik dua (`:`) di dalam pola rute. Contohnya, pada endpoint `/users/:id`, bagian `:id` akan menangkap nilai apa pun yang diberikan pada posisi tersebut di URL, misalnya `/users/5` atau `/users/abc123`.
+
+Route parameters sangat berguna ketika kita ingin mengakses data spesifik berdasarkan identitas unik, seperti ID user, kode produk, atau slug artikel. Gunakan route parameters jika nilai tersebut merupakan bagian utama dari identitas sumber daya yang diakses.
+
+Berikut contoh implementasi route parameters di Gin:
+
+```go
+package main
+
+import (
+    "net/http"
+    "github.com/gin-gonic/gin"
+)
+
+func main() {
+    r := gin.Default()
+
+    // Mendefinisikan route dengan parameter dinamis ":id"
+    r.GET("/users/:id", func(c *gin.Context) {
+        id := c.Param("id") // Mengambil nilai parameter "id" dari URL
+        c.JSON(http.StatusOK, gin.H{
+            "message": "Detail user dengan ID: " + id,
+        })
+    })
+
+    r.Run(":8080")
+}
+```
+
+Ketika coba di akses
+
+```bash
+
+```
+
+Pada contoh di atas, jika ada permintaan ke `/users/42`, maka nilai `42` akan diambil melalui `c.Param("id")` dan dapat digunakan di dalam handler. Dengan demikian, route parameters memudahkan pembuatan endpoint yang fleksibel dan dinamis sesuai kebutuhan aplikasi.
+
+Untuk mencoba Routes Parameter, bisa menggunakan kode di atas, atau bisa di akses di 
 
 #### 3.2.2.2 Query Parameters
 
-### 3.2.3 Route groups dan middlewares
+Query parameters adalah pasangan kunci-nilai yang ditambahkan di akhir URL setelah tanda tanya (?). Mereka dipisahkan oleh ampersand (&). Contoh URL dengan query parameters adalah `/products?category=elektronik&sort=price_asc`. Di sini, category dan sort adalah query parameters.
+
+Untuk kapan menggunakan query parameters Gunakan query parameters untuk memfilter, mengurutkan, atau menyediakan data opsional yang tidak secara langsung mengidentifikasi sumber daya. Misalnya, untuk paginasi (page=1&limit=10), pencarian (q=laptop), atau filtering (status=active). Berikut contoh kodenya :
+
+```go
+package main
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+func main() {
+	r := gin.Default()
+
+	// Mendefinisikan rute yang akan menggunakan query parameters
+	r.GET("/products", func(c *gin.Context) {
+		category := c.Query("category") // Mengambil nilai query parameter "category"
+		sort := c.Query("sort")         // Mengambil nilai query parameter "sort"
+
+		if category != "" && sort != "" {
+			c.JSON(http.StatusOK, gin.H{"message": "Mendapatkan produk kategori: " + category + " dengan sort: " + sort})
+		} else if category != "" {
+			c.JSON(http.StatusOK, gin.H{"message": "Mendapatkan produk kategori: " + category})
+		} else if sort != "" {
+			c.JSON(http.StatusOK, gin.H{"message": "Mendapatkan produk dengan sort: " + sort})
+		} else {
+			c.JSON(http.StatusOK, gin.H{"message": "Mendapatkan semua produk"})
+		}
+	})
+
+	r.Run(":8080")
+}
+```
+
+Di sini, c.Query("category") dan c.Query("sort") digunakan untuk mengambil nilai dari query parameters. Kita juga bisa menggunakan c.DefaultQuery("paramName", "defaultValue") untuk memberikan nilai default jika parameter tidak ada.
+
+### 3.2.3 Route groups dan Middlewares
 
 ### 3.2.4 Static file serving
 
