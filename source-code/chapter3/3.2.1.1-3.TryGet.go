@@ -7,12 +7,12 @@ import (
 
 func main() {
     router := gin.Default()
-    // Mendefinisikan route dengan parameter dinamis :id
+    // Define a route with dynamic parameters :id
     router.GET("/users/:id", func(c *gin.Context) {
-        // Mengambil nilai dari parameter 'id' dari URL
+        // Get the value of the 'id' parameter from the URL
         id := c.Param("id")
         c.JSON(http.StatusOK, gin.H{
-            "message": "Mengambil data user dengan ID: " + id,
+            "message": "Getting user data with ID: " + id,
         })
     })
     router.Run(":8080")

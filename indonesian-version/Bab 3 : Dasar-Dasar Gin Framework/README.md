@@ -12,14 +12,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 ```
+
 Berikut penjelasan singkat :
 
-- `net/hhtp` :  Digunakan untuk konstanta status HTTP seperti http.StatusOK
+- `net/hhtp` :  Digunakan untuk konstanta status HTTP seperti `http.StatusOK`
 - `github.com/gin-gonic/gin` : Import package utama framework Gin
   
-Setiap aplikasi Go memerlukan package yang relevan untuk fungsionalitasnya. `net/http` adalah package standar Go yang menyediakan fungsi dasar untuk protokol HTTP, termasuk kode status (misalnya, 200 OK, 404 Not Found). 
+Setiap aplikasi Go memerlukan package yang relevan untuk fungsionalitasnya. `net/http` adalah package standar Go yang menyediakan fungsi dasar untuk protokol HTTP, termasuk kode status (misalnya : `200 OK`, `404 Not Found`). 
 
-Sementara itu, `github.com/gin-gonic/gin` adalah package Gin itu sendiri, yang berisi semua tools dan fungsi yang diperlukan untuk membangun API dengan Gin.
+Sementara itu, `github.com/gin-gonic/gin` adalah package Gin itu sendiri yang mengambil dari GitHub Repository Official Source Code yang berisi semua tools dan fungsi yang diperlukan untuk membangun API dengan Gin.
 
 ### 3.1.2 Inisialisasi Gin Engine
 
@@ -31,14 +32,19 @@ func main() {
 }
 ```
 
-Baris `r := gin.Default()` adalah titik awal aplikasi Gin, dengan keterangan berikut :
-1. `gin.Default()` : Ini adalah fungsi yang mengembalikan instance dari `*gin.Engine`. `*gin.Engine` adalah objek utama yang akan digunakan untuk mendefinisikan rute, middleware, dan menjalankan server. `Default()` secara otomatis menyertakan dua middleware bawaan yang sangat berguna :
-   - Logger : Menampilkan log dari setiap permintaan yang masuk ke konsol, sangat membantu untuk debugging.
-    - Recovery : Menangkap panic (kesalahan runtime) yang mungkin terjadi selama pemrosesan permintaan, sehingga server tidak crash sepenuhnya dan bisa mengirimkan respons error yang sesuai ke klien.
-2. Jika ingin memulai dengan engine yang benar-benar "kosong" tanpa middleware bawaan, bisa gunakan `r := gin.New()`. Namun, `gin.Default()` adalah pilihan paling umum dan direkomendasikan untuk sebagian besar kasus.
-3. `r`: Ini adalah variabel (umumnya dinamakan r untuk router) yang menyimpan instance `*gin.Engine`. Semua definisi rute dan konfigurasi server akan melekat pada objek `r` ini.
+Baris `r := gin.Default()` adalah titik awal aplikasi Gin, dengan keterangan berikut:
 
-### 3.2.3 Menjalankan Server
+1. **`gin.Default()`**  
+    Fungsi ini mengembalikan instance dari `*gin.Engine`. `gin.Engine` adalah objek utama yang digunakan untuk mendefinisikan rute, middleware, dan menjalankan server. `Default()` secara otomatis menyertakan dua middleware bawaan yang sangat berguna:
+    - **Logger**: Menampilkan log dari setiap permintaan yang masuk ke konsol, sangat membantu untuk debugging.
+    - **Recovery**: Menangkap panic (kesalahan runtime) yang mungkin terjadi selama pemrosesan permintaan, sehingga server tidak crash sepenuhnya dan bisa mengirimkan respons error yang sesuai ke klien.
+
+2. Jika ingin memulai dengan engine yang benar-benar *kosong* tanpa middleware bawaan, bisa gunakan `r := gin.New()`. Namun, `gin.Default()` adalah pilihan paling umum dan direkomendasikan untuk sebagian besar kasus.
+
+3. **`r`**  atau lainnya
+   Ini adalah variabel (umumnya dinamakan `r` untuk router) yang menyimpan instance `*gin.Engine`. Semua definisi rute dan konfigurasi server akan melekat pada objek `r` ini.
+
+### 3.1.3 Menjalankan Server
 
 ```go
 func main() {
@@ -50,43 +56,43 @@ func main() {
 `r.Run(":8080")` adalah baris terakhir yang harus dipanggil di fungsi main Gin. Fungsi ini :
 
 - Memulai server HTTP Gin.
-- endengarkan permintaan masuk pada alamat dan port yang ditentukan (dalam contoh ini, `:8080` berarti mendengarkan di semua interface jaringan yang tersedia pada port 8080).
+- Mendengarkan permintaan masuk pada alamat dan port yang ditentukan (dalam contoh ini, `:8080` berarti mendengarkan di semua interface jaringan yang tersedia pada port 8080).
 - Aplikasi akan terus berjalan dan menunggu permintaan hingga dihentikan secara manual (misalnya, dengan Ctrl+C).
 
 Untuk memahami kode dasar Go Gin bisa menggunakan kode dasar ini :
 
-3.2-BasicGin.go
+3.1-BasicGin.go
 
 ```go
 package main
 
 import (
-    "net/http"
+	"net/http"
 
-    "github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
-    // Inisialisasi Gin dengan middleware default (Logger dan Recovery)
-    r := gin.Default()
+	// Initialize Gin with default middleware (Logger and Recovery)
+	r := gin.Default()
 
-    // Definisikan route untuk path root ("/") dengan metode GET
-    r.GET("/", func(c *gin.Context) {
-        // Kirim respons JSON dengan status 200 OK
-        c.JSON(http.StatusOK, gin.H{
-            "message": "Hello From Gin!",
-        })
-    })
+	// Define route for root path ("/") with GET method
+	r.GET("/", func(c *gin.Context) {
+		// Send JSON response with status 200 OK
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Hello From Gin!",
+		})
+	})
 
-    // Jalankan server di port 8080
-    r.Run(":8080")
+	// Run server on port 8080
+	r.Run(":8080")
 }
 ```
 
 Jalankan dengaan menggunakan perintah : 
 
 ```bash
-$ go run 3.2-BasicGin.go
+$ go run 3.1-BasicGin.go
 ```
 Lalu buka browser dengan URL :
 
@@ -94,20 +100,20 @@ Lalu buka browser dengan URL :
 localhost:port/
 ```
 
-atau karena port yang ada di code adalah `8080` :
+karena port yang ada di code adalah `8080`, maka akses dengan menggunakan :
 
 ```
 localhost:8080/
 ```
 
-Maka akan keluar dengan di browser seperti yang ada di gambar : 
+Maka akan keluar dengan di browser seperti ini : 
 
-![3.2.1-test](../../images/chapter3/3.2.1-1.BasicGin.png)
+![3.1-1.test](../../images/chapter3/3.1-1.BasicGin.png)
 
 Dan pada log terminal akan menampilkan data transaksi :
 
 ```bash
-$ go run 3.2-BasicGin.go 
+$ go run 3.1-BasicGin.go 
 [GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
 
 [GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
@@ -122,11 +128,18 @@ Please check https://pkg.go.dev/github.com/gin-gonic/gin#readme-don-t-trust-all-
 [GIN] 2025/07/01 - 15:46:55 | 404 |       1.122µs |       127.0.0.1 | GET      "/favicon.ico"
 ```
 
-Test telah berhasil, terlihat terdapat transaksi, dan di repository sudah di sediakan source code tinggal buka [3.2-BasicGin.go]()
+Test telah berhasil, juga terlihat terdapat transaksi pada jaringan :
 
-## 3.3 Routing
+```bash
+[GIN] 2025/07/01 - 15:46:55 | 200 |      36.007µs |       127.0.0.1 | GET      "/"
+[GIN] 2025/07/01 - 15:46:55 | 404 |       1.122µs |       127.0.0.1 | GET      "/favicon.ico"
+```
 
-### 3.3.1 Basic routing (GET, POST, PUT, DELETE)
+Untuk mencoba code, bisa salin kode di atas atau akses pada repository yang sudah disediakan di [3.1-BasicGin.go](../../source-code/chapter3/3.1-BasicGin.go)
+
+## 3.2 Routing
+
+### 3.2.1 Basic routing (GET, POST, PUT, DELETE)
 
 Setiap permintaan HTTP memiliki metode atau verb yang menunjukkan jenis operasi yang ingin dilakukan klien. Gin menyediakan fungsi yang sesuai untuk setiap metode ini, memungkinkan kita untuk mendefinisikan handler atau fungsi yang akan dieksekusi ketika permintaan dengan metode dan path tertentu diterima. Berikut adalah contoh penggunaan metode routing dasar di Gin :
 
@@ -141,6 +154,7 @@ package main
 
 import (
     "net/http"
+
     "github.com/gin-gonic/gin"
 )
 
@@ -163,9 +177,9 @@ $ go run 3.2.1.1-1.TryGet.go
 
 Ketika di akses dengan menggunakan URL `localhost:8080/welcome` akan mengeluarkan  :
 
+![3.2.1.1-1-1.TryGet.png](../../images/chapter3/3.2.1.1-1-1.TryGet.png)
 
-
-Kita akan coba dengan menambah GET dengan routing `/checkserver' :
+Kita akan coba dengan menambah GET dengan routing `/checkserver' dengan pesan yang berbeda :
 
 3.2.1.1-2.TryGet.go
 
@@ -195,7 +209,20 @@ func main() {
 }
 ```
 
+Kita coba jalankan :
+
+```bash
+$ go run 3.2.1.1-2.TryGet.go
+```
+Ketika di akses dengan akses lokasi 'localhost:8080/checkserver' maka akan nampak :
+
+![3.2.1.1-1-2.TryGet](../../images/chapter3/3.2.1.1-1-2.TryGet.png)
+
 Jika akses di browser antara `localhost:8080/welcome` dan `localhost:8080/checkserver` maka pasti akan berbeda output yang di keluarkan :
+
+![3.2.1.1-1-2.TryGet](../../images/chapter3/3.2.1.1-1-2.TryGet.png)
+
+![3.2.1.1-1-3.TryGet](../../images/chapter3/3.2.1.1-1-3.TryGet.png)
 
 Contoh kasus nyata lagi meminta data berdasarkan pada sebuah ID, kita panggil dengan penggunaan URL `localhost:8080/users/1` dengan kode :
 
@@ -211,29 +238,31 @@ import (
 
 func main() {
     router := gin.Default()
-    // Mendefinisikan route dengan parameter dinamis :id
+    // Define a route with dynamic parameters :id
     router.GET("/users/:id", func(c *gin.Context) {
-        // Mengambil nilai dari parameter 'id' dari URL
+        // Get the value of the 'id' parameter from the URL
         id := c.Param("id")
         c.JSON(http.StatusOK, gin.H{
-            "message": "Mengambil data user dengan ID: " + id,
+            "message": "Getting user data with ID: " + id,
         })
     })
     router.Run(":8080")
 }
 ```
 
+> `id := c.Param("id")` merupakan dua entitas yang satu variable sementara untuk menyimpan ID (id) dan fungsi untuk mendapatkan data yang diinginkan (c.Param), dinamakan Route Parameter, untuk lebih lanjut akan di bahas di Sub bab 3.2.2.1. 
+
 Maka ketika di panggil dengan `localhost:8080/user/1` maka akan menjawab :
 
+![3.2.1.1-1-4.TryGet.png](../../images/chapter3/3.2.1.1-1-4.TryGet.png)
 
-
-Dan disitulah, dengan uji coba code di atas dapat menjelasakan dari GET Method. Untuk source cdoe bisa di lihat di []() dan []()
+Untuk mencoba code bisa mengakses [3.2.1.1-1.TryGet.go](../../source-code/chapter3/3.2.1.1-1.TryGet.go),[3.2.1.1-2.TryGet.go](../../source-code/chapter3/3.2.1.1-2.TryGet.go), dan [3.2.1.1-3.TryGet.go](../../source-code/chapter3/3.2.1.1-3.TryGet.go)
 
 #### 3.2.1.2 POST Method
 
 Metode POST digunakan untuk mengirim data dari pengguna ke server untuk membuat sumber daya baru. Data yang dikirim biasanya berada di dalam body dari permintaan (request body). 
 
-> Keterangan : Pengujian POST memerlukan tools khusus seperti `cURL`, Postman, atau Insomnia untuk mengirim permintaan.
+> Keterangan : Pengujian POST memerlukan tools khusus seperti `cURL` pada terminal, Postman, atau Insomnia untuk mengirim permintaan.
 
 3.2.1.2-1.TryPost.go
 
@@ -247,17 +276,19 @@ import (
 
 func main() {
     router := gin.Default()
-    // Mendefinisikan route untuk metode POST di path "/create-user"
+    // Define a route for the POST method in the path "/create-user"
     router.POST("/create-user", func(c *gin.Context) {
-        // ... Logika untuk membuat user baru akan ada di sini ...
-        // Untuk saat ini, kita hanya mengirim respons konfirmasi
+        // ... Logic to create a new user will go here ...
+        // For now, we just send a confirmation response
         c.JSON(http.StatusCreated, gin.H{
-            "message": "User berhasil dibuat.",
+            "message": "User created successfully.",
         })
     })
     router.Run(":8080")
 }
 ```
+
+> Untuk logika membuat user akan menyesuaikan dengan arsitektur dari sistem masing masing, code di atas hanya memberikan pesan bahwa fungsi POST berhasil, dan peneysuaian bisa di lihat pada bagian materi lebih lanjut
 
 Kode di atas akan membuat sebuah endpoint `/create-user` yang hanya menerima metode POST. Jika endpoint ini diakses dengan metode POST, server akan merespons dengan status `201 Created` dan sebuah pesan JSON.
 
@@ -276,10 +307,17 @@ $ curl -X POST http://localhost:8080/create-user
 Anda akan mendapatkan output JSON berikut :
 
 ```json
-{"message":"User berhasil dibuat."}
+{"message":"User created successfully."}
 ```
 
-Sama seperti GET, kita bisa mendefinisikan beberapa route POST dalam satu aplikasi.
+Tapi kalau kita paksa akses pakai GET, maka akan menghasilkan output berikut :
+
+```bash
+$ curl -X GET http://localhost:8080/create-user
+404 page not found
+```
+
+`/create-user` hanya menerima POST, jadi ketika menggunakan GET tidak akan bisa berjalan sesuai dengan kode. Sama seperti GET, kita bisa mendefinisikan beberapa route POST dalam satu aplikasi.
 
 3.2.1.2-2.TryPost.go
 
@@ -296,13 +334,13 @@ func main() {
     
     router.POST("/create-user", func(c *gin.Context) {
         c.JSON(http.StatusCreated, gin.H{
-            "message": "User berhasil dibuat.",
+            "message": "User created successfully.",
         })
     })
 
     router.POST("/create-product", func(c *gin.Context) {
         c.JSON(http.StatusCreated, gin.H{
-            "message": "Produk berhasil dibuat.",
+            "message": "Product created successfully.",
         })
     })
     
@@ -310,9 +348,8 @@ func main() {
 }
 ```
 
-Sekarang, jika Anda menjalankan kode di atas dan mengirim permintaan POST ke endpoint yang berbeda, Anda akan mendapatkan respons yang berbeda pula.
+Sekarang, jika Anda menjalankan kode di atas dan mengirim permintaan POST ke endpoint yang berbeda, Anda akan mendapatkan respons yang berbeda pula. Uji endpoint `/create-product` :
 
-Uji endpoint `/create-product` :
 ```bash
 $ curl -X POST http://localhost:8080/create-product
 ```
@@ -323,7 +360,7 @@ Output :
 {"message":"Produk berhasil dibuat."}
 ```
 
-Ini menunjukkan bagaimana Gin dapat dengan mudah memetakan permintaan POST ke handler yang berbeda berdasarkan path URL. Untuk source code bisa dilihat di []() dan []().
+Ini menunjukkan bagaimana Gin dapat dengan mudah memetakan permintaan POST ke handler yang berbeda berdasarkan path URL. Untuk source code bisa dilihat di [3.2.1.2-1.TryPost.go](../../source-code/chapter3/3.2.1.2-1.TryPost.go) dan [3.2.1.2-2.TryPost.go](../../source-code/chapter3/3.2.1.2-2.TryPost.go).
 
 #### 3.2.1.3 PUT Method
 
@@ -332,6 +369,7 @@ Metode PUT digunakan untuk memperbarui sumber daya yang sudah ada di server. Bia
 > Keterangan : Sama seperti POST, pengujian PUT memerlukan tools khusus seperti `cURL`, Postman, atau Insomnia.
 
 3.2.1.3-1.TryPut.go
+
 ```go
 package main
 
@@ -356,12 +394,14 @@ func main() {
 ```
 Kode di atas mendefinisikan endpoint `/users/:id` yang merespons metode PUT. Bagian `:id` adalah *route parameter* yang memungkinkan URL menjadi dinamis. Nilai dari `id` bisa diambil menggunakan `c.Param("id")`.
 
-Jalankan server:
+Jalankan server :
+
 ```bash
 $ go run 3.2.1.3-1.TryPut.go
 ```
 
-Untuk mengujinya, gunakan `cURL` dan berikan ID user yang ingin di-update, misalnya `123`:
+Untuk mengujinya, gunakan `cURL` dan berikan ID user yang ingin di-update, misalnya `123` :
+
 ```bash
 $ curl -X PUT http://localhost:8080/users/123
 ```
@@ -519,7 +559,7 @@ Route parameters adalah bagian dari URL yang memungkinkan kita menangkap nilai d
 
 Route parameters sangat berguna ketika kita ingin mengakses data spesifik berdasarkan identitas unik, seperti ID user, kode produk, atau slug artikel. Gunakan route parameters jika nilai tersebut merupakan bagian utama dari identitas sumber daya yang diakses.
 
-Berikut contoh implementasi route parameters di Gin:
+Berikut contoh implementasi route parameters di Gin :
 
 ```go
 package main
@@ -556,7 +596,7 @@ Untuk mencoba Routes Parameter, bisa menggunakan kode di atas, atau bisa di akse
 
 #### 3.2.2.2 Query Parameters
 
-Query parameters adalah pasangan kunci-nilai yang ditambahkan di akhir URL setelah tanda tanya (?). Mereka dipisahkan oleh ampersand (&). Contoh URL dengan query parameters adalah `/products?category=elektronik&sort=price_asc`. Di sini, category dan sort adalah query parameters.
+Query parameters adalah pasangan kunci-nilai yang ditambahkan di akhir URL setelah tanda tanya (`?`). Mereka dipisahkan oleh ampersand (`&`). Contoh URL dengan query parameters adalah `/products?category=elektronik&sort=price_asc`. Di sini, category dan sort adalah query parameters.
 
 Untuk kapan menggunakan query parameters Gunakan query parameters untuk memfilter, mengurutkan, atau menyediakan data opsional yang tidak secara langsung mengidentifikasi sumber daya. Misalnya, untuk paginasi (page=1&limit=10), pencarian (q=laptop), atau filtering (status=active). Berikut contoh kodenya :
 
@@ -594,7 +634,7 @@ func main() {
 
 Di sini, c.Query("category") dan c.Query("sort") digunakan untuk mengambil nilai dari query parameters. Kita juga bisa menggunakan c.DefaultQuery("paramName", "defaultValue") untuk memberikan nilai default jika parameter tidak ada.
 
-### 3.2.3 Route groups dan Middlewares
+### 3.2.3 Route Groups dan Middlewares
 
 ### 3.2.4 Static file serving
 

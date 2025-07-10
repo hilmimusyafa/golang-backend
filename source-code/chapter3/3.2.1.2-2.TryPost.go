@@ -10,13 +10,13 @@ func main() {
     
     router.POST("/create-user", func(c *gin.Context) {
         c.JSON(http.StatusCreated, gin.H{
-            "message": "User berhasil dibuat.",
+            "message": "User created successfully.",
         })
     })
 
     router.POST("/create-product", func(c *gin.Context) {
         c.JSON(http.StatusCreated, gin.H{
-            "message": "Produk berhasil dibuat.",
+            "message": "Product created successfully.",
         })
     })
     

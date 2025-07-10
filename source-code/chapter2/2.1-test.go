@@ -7,17 +7,17 @@ import (
 )
 
 func main() {
-    // Inisialisasi Gin dengan middleware default (Logger dan Recovery)
+    // Initialize Gin with default middleware (Logger and Recovery)
     r := gin.Default()
 
-    // Definisikan route untuk path root ("/") dengan metode GET
+    // Define route for root path ("/") with GET method
     r.GET("/", func(c *gin.Context) {
-        // Kirim respons JSON dengan status 200 OK
+        // Send JSON response with status 200 OK
         c.JSON(http.StatusOK, gin.H{
             "message": "Hello From Gin!",
         })
     })
 
-    // Jalankan server di port 8080
+    // Run server on port 8080
     r.Run(":8080")
 }

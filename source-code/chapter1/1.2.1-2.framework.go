@@ -2,6 +2,7 @@ package main
 
 import (
     "log"
+    
     "github.com/gin-gonic/gin"
 )
 
@@ -10,10 +11,10 @@ func main() {
 
     router.GET("/hello", func(c *gin.Context) {
         c.JSON(200, gin.H{
-            "message": "Halo Dunia dari Gin!",
+            "message": "Hello World from Gin!",
         })
     })
 
-    log.Println("Server Gin berjalan di :8080")
+    log.Println("Gin Server run on :8080")
     router.Run(":8080")
 }

@@ -210,28 +210,30 @@ func main() {
 Dan dibandingkan juga dengan menggunakan Framework (Gin) :
 
 1.2.1-2.framework.go
+
 ```go
 package main
 
 import (
-	"log"
-	"github.com/gin-gonic/gin"
+    "log"
+    
+    "github.com/gin-gonic/gin"
 )
 
 func main() {
-	router := gin.Default() 
+    router := gin.Default() 
 
-	router.GET("/hello", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "Halo Dunia dari Gin!",
-		})
-	})
+    router.GET("/hello", func(c *gin.Context) {
+        c.JSON(200, gin.H{
+            "message": "Hello World from Gin!",
+        })
+    })
 
-	log.Println("Server Gin berjalan di :8080")
-	router.Run(":8080")
+    log.Println("Gin Server run on :8080")
+    router.Run(":8080")
 }
 ```
-> Untuk mencoba kode bisa langsung membuka folder [`/golang-backend/source-code/chapter1`](../../source-code/chapter1)
+Untuk mencoba code, bisa salin kode di atas atau akses pada repository yang sudah disediakan di [1.2.1-1.nonframework.go](../../source-code/chapter1/1.2.1-1.nonframework.go) dan [1.2.1-2.framework.go](../../source-code/chapter1/1.2.1-2.framework.go)
 
 Perbedaan Kunci yang Terlihat dari Contoh :
 

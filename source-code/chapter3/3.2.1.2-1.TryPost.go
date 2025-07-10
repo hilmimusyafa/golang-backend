@@ -7,12 +7,12 @@ import (
 
 func main() {
     router := gin.Default()
-    // Mendefinisikan route untuk metode POST di path "/create-user"
+    // Define a route for the POST method in the path "/create-user"
     router.POST("/create-user", func(c *gin.Context) {
-        // ... Logika untuk membuat user baru akan ada di sini ...
-        // Untuk saat ini, kita hanya mengirim respons konfirmasi
+        // ... Logic to create a new user will go here ...
+        // For now, we just send a confirmation response
         c.JSON(http.StatusCreated, gin.H{
-            "message": "User berhasil dibuat.",
+            "message": "User created successfully.",
         })
     })
     router.Run(":8080")
