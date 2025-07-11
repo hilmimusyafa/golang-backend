@@ -356,7 +356,7 @@ func main() {
 }
 ```
 
-Dengan kode di atas, Anda dapat menguji POST dengan data yang berbeda untuk setiap endpoint. Misalnya, untuk membuat user baru dengan nama:
+Dengan kode di atas, dapat diuji POST dengan data yang berbeda untuk setiap endpoint. Misalnya, untuk membuat user baru dengan nama:
 
 ```bash
 $ curl -X POST -d "name=Andi" http://localhost:8080/create-user
@@ -715,8 +715,7 @@ Maka output :
 {"message":"Profil user dengan username : johndoe"}
 ```
 
-Dengan demikian, Anda bisa menggunakan nama parameter apa pun sesuai kebutuhan pada route Gin.
-Untuk mencoba Route Parameters, bisa menggunakan kode di atas, atau akses source code pada [3.2.2.1-1.TryRouteParameters.go](../../source-code/chapter3/3.2.2.1-1.TryRouteParameters.go) dan [3.2.2.1-2.TryRouteParametersUsername.go](../../source-code/chapter3/3.2.2.1-2.TryRouteParametersUsername.go).
+Dengan demikian, bisa menggunakan nama parameter apa pun sesuai kebutuhan pada route Gin. Untuk mencoba Route Parameters, bisa menggunakan kode di atas, atau akses source code pada [3.2.2.1-1.TryRouteParameters.go](../../source-code/chapter3/3.2.2.1-1.TryRouteParameters.go) dan [3.2.2.1-2.TryRouteParametersUsername.go](../../source-code/chapter3/3.2.2.1-2.TryRouteParametersUsername.go).
 
 #### 3.2.2.2 Query Parameters
 
@@ -778,7 +777,7 @@ func main() {
 }
 ```
 
-Pada kode di atas, handler `/products` akan membaca query parameters `category` dan `sort` menggunakan fungsi `c.Query("nama_parameter")`. Jika parameter tidak ada, maka akan bernilai string kosong. Anda juga bisa menggunakan `c.DefaultQuery("nama_parameter", "nilai_default")` untuk memberikan nilai default jika parameter tidak dikirimkan.
+Pada kode di atas, handler `/products` akan membaca query parameters `category` dan `sort` menggunakan fungsi `c.Query("nama_parameter")`. Jika parameter tidak ada, maka akan bernilai string kosong. Dan juga bisa menggunakan `c.DefaultQuery("nama_parameter", "nilai_default")` untuk memberikan nilai default jika parameter tidak dikirimkan.
 
 Jalankan server :
 
@@ -808,19 +807,525 @@ Lalu akses endpoint dengan berbagai kombinasi query parameters:
 
 Dengan demikian, query parameters sangat berguna untuk membuat endpoint yang fleksibel dan dapat menangani berbagai kebutuhan filtering, sorting, dan pencarian data tanpa harus membuat banyak endpoint berbeda.
 
-Untuk mencoba kode di atas, Anda bisa menyalin kode atau mengakses source code pada [3.2.2.2.TryQueryParameters.go](../../source-code/chapter3/3.2.2.2.TryQueryParameters.go).
+Untuk mencoba kode di atas, dapat menyalin kode atau mengakses source code pada [3.2.2.2.TryQueryParameters.go](../../source-code/chapter3/3.2.2.2.TryQueryParameters.go).
 
 ### 3.2.3 Route Groups dan Middlewares
 
+Saat membangun aplikasi backend yang semakin besar, kita perlu mengelompokkan rute agar kode lebih rapi dan mudah dikelola. Selain itu, sering kali kita ingin menerapkan logika tertentu (seperti autentikasi, logging, dll) ke beberapa rute sekaligus. Gin menyediakan dua fitur utama untuk kebutuhan ini yaitu Route Groups dan Middlewares.
 
-### 3.2.4 Static file serving
+#### 3.2.3.1 Route Groups
 
-## 3.2 Request Handling
+Route Groups digunakan untuk mengelompokkan beberapa rute yang memiliki awalan path (prefix) yang sama, atau yang ingin diberi perlakuan khusus (misal: middleware tertentu). Dengan route group, kita tidak perlu menulis ulang prefix pada setiap rute, sehingga kode lebih singkat dan terstruktur.
 
-### 3.2.1 Binding request data (JSON, Form, Query)
+Kapan menggunakan route groups?
+- Jika ada banyak rute yang memiliki awalan path yang sama, misal `/admin`, `/api/v1`, dll.
+- Jika ingin menerapkan middleware tertentu hanya pada sekelompok rute saja.
 
-### 3.2.2 Request validation
+Contoh penggunaan route group :
 
-### 3.2.3 Response formatting (JSON, XML, HTML)
+3.2.3.1.TryRouteGroupsParameters.go
 
-### 3.2.4 Error handling patterns
+```go
+package main
+
+import (
+    "net/http"
+    "github.com/gin-gonic/gin"
+)
+
+func main() {
+    r := gin.Default()
+
+    // Create a group for admin routes
+    admin := r.Group("/admin")
+    {
+        admin.GET("/users", func(c *gin.Context) {
+            c.JSON(http.StatusOK, gin.H{"message": "List of admin users"})
+        })
+        admin.POST("/products", func(c *gin.Context) {
+            c.JSON(http.StatusOK, gin.H{"message": "New products added by admin"})
+        })
+    }
+
+    // Creating a group for API version 1
+    apiV1 := r.Group("/api/v1")
+    {
+        apiV1.GET("/data", func(c *gin.Context) {
+            c.JSON(http.StatusOK, gin.H{"message": "Data from API v1"})
+        })
+    }
+
+    // Routes outside the group can still be created as usual.
+    r.GET("/", func(c *gin.Context) {
+        c.JSON(http.StatusOK, gin.H{"message": "Home page"})
+    })
+
+    r.Run(":8080")
+}
+```
+
+Penjelasan dari kode di atas :
+- Semua rute di dalam `admin := r.Group("/admin")` otomatis memiliki prefix `/admin`, misal `/admin/users`, `/admin/products`.
+- Semua rute di dalam `apiV1 := r.Group("/api/v1")` otomatis memiliki prefix `/api/v1`, misal `/api/v1/data`.
+- Kita tetap bisa membuat rute di luar group jika tidak ingin diberi prefix khusus.
+
+Jika kode di atas dijalankan :
+
+```bash
+$ go run 3.2.3.1.TryRouteGroupsParameters.go
+```
+
+Lalu akses endpoint berikut di browser atau menggunakan `curl` :
+
+- Home page
+    ```
+    http://localhost:8080/
+    ```
+    Output : `{"message":"Home page"}`
+
+- Admin users
+    ```
+    http://localhost:8080/admin/users
+    ```
+    Output : `{"message":"List of admin users"}`
+
+- Admin add products
+    ```
+    http://localhost:8080/admin/products
+    ```
+    Output : `{"message":"New products added by admin"}`
+
+- API v1 data
+    ```
+    http://localhost:8080/api/v1/data
+    ```
+    Output : `{"message":"Data from API v1"}`
+
+Dengan demikian, setiap endpoint yang ada di dalam group akan otomatis memiliki prefix sesuai dengan group-nya, dan output JSON akan sesuai dengan handler masing-masing.
+
+Dengan route group, aplikasi Gin kamu akan lebih terstruktur dan mudah dikembangkan, terutama jika jumlah rute sudah banyak. Sebenarnya, penggunaan route group ini sama seperti mendefinisikan rute satu per satu seperti sebelumnya. Perbedaannya hanya pada cara pengelompokannya saja, sehingga kode menjadi lebih tertata rapi.
+
+Untuk mencoba code bisa akses [3.2.3.1.TryRouteGroupsParameters](../../source-code/chapter3/3.2.3.1.TryRouteGroupsParameters.go)
+
+#### 3.2.3.2 Middlewares
+
+Middlewares adalah fungsi yang dijalankan sebelum atau sesudah handler utama pada setiap permintaan HTTP. Middleware sangat berguna untuk menangani logika yang bersifat umum, seperti autentikasi, logging, validasi, atau penanganan error, tanpa harus menulis kode yang sama berulang kali di setiap handler.
+
+Kapan menggunakan middleware? Gunakan middleware untuk setiap logika yang ingin diterapkan ke banyak rute sekaligus, misalnya :
+
+- Logging request dan response
+- Autentikasi dan otorisasi
+- Validasi data awal
+- Penanganan error global
+- Modifikasi request/response secara umum
+
+Jenis-jenis middleware di Gin bermacam-macam, yaitu :
+
+- Global Middleware : Diterapkan ke semua rute dalam aplikasi.
+- Group Middleware : Diterapkan ke semua rute dalam sebuah group.
+- Route Middleware : Diterapkan hanya ke rute tertentu.
+
+Mari kita masuk ke contoh penggunaan Middleware di Gin :
+
+3.2.3.2.TryMiddleware.go
+
+```go
+package main
+
+import (
+    "fmt"
+    "net/http"
+    "time"
+
+    "github.com/gin-gonic/gin"
+)
+
+// Simple logging middleware: records every incoming request
+func LoggerMiddleware() gin.HandlerFunc {
+    return func(c *gin.Context) {
+        start := time.Now()           // Record start time
+        c.Next()                      // Call the next handler
+        duration := time.Since(start) // Calculate duration
+        fmt.Printf("[%s] %s %s %v\n", c.Request.Method, c.Request.URL.Path, c.ClientIP(), duration)
+    }
+}
+
+// Simple authentication middleware: checks the Authorization header
+func AuthMiddleware() gin.HandlerFunc {
+    return func(c *gin.Context) {
+        token := c.GetHeader("Authorization")
+        if token != "valid-token" {
+            // If the token is invalid, stop the request and send a 401 status
+            c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
+            return
+        }
+        c.Next() // Token is valid, proceed to the next handler
+    }
+}           
+
+// Example of using middleware in Gin
+func main() {
+    r := gin.Default()
+
+    // 1. Global Middleware : applies to all routes
+    r.Use(LoggerMiddleware())
+
+    // 2. Public route without authentication
+    r.GET("/public", func(c *gin.Context) {
+        c.JSON(http.StatusOK, gin.H{"message": "This is a public area"})
+    })
+
+    // 3. Group Middleware : only for routes within the /private group
+    private := r.Group("/private")
+    private.Use(AuthMiddleware())
+    {
+        private.GET("/data", func(c *gin.Context) {
+            c.JSON(http.StatusOK, gin.H{"message": "This is secret data"})
+        })
+        private.POST("/settings", func(c *gin.Context) {
+            c.JSON(http.StatusOK, gin.H{"message": "Settings updated successfully"})
+        })
+    }
+
+    // 4. Route Middleware : only for one route
+    r.GET("/admin-dashboard", AuthMiddleware(), func(c *gin.Context) {
+        c.JSON(http.StatusOK, gin.H{"message": "Welcome to the admin dashboard"})
+    })
+
+    r.Run(":8080")
+}
+```
+
+Kita uji coba jalankan kodenya :
+
+```bash
+$ go run 3.2.3.2.TryMiddleware.go
+```
+
+Pertama akses endpoint `/public` (tidak perlu header khusus) : 
+
+- Browser : `http://localhost:8080/public`
+- Output :
+  ```json
+  {"message":"This is a public area"}
+  ```
+- Terminal log akan menampilkan request yang masuk, misal :
+  
+  ```
+  [GET] /public 127.0.0.1 120.123µs
+  ```
+
+Hal ini karena `/public` tidak ada pengkhususan untuk mengakses API tersebut (logika dalam kodenya tidak di lewati oleh middlewear authorization). Sekarang, kita coba akses endpoint `/private/data` tanpa header Authorization :
+
+- Browser : `http://localhost:8080/private/data`
+- Output :
+  
+  ```json
+  {"message":"Unauthorized"}
+  ```
+
+- Status HTTP : 401 Unauthorized
+
+Kenapa bisa gagal, karena untuk mengakses `/private/data` harus menggunakan authorization, sesuai kode, `/private/data` melewati middleware authentication yang ada validasi token, dan yang dilakukan sebelumnya tanpa mengirimkan token sehingga kredensial gagal dan akhirnya dikirim message berupa `unauthorized`. Sekarang kita coba akses endpoint `/private/data` dengan header Authorization : 
+
+- Menggunakan cURL :
+  
+  ```bash
+  $ curl -H "Authorization: valid-token" http://localhost:8080/private/data
+  ```
+
+- Output :
+  
+  ```json
+  {"message":"This is secret data"}
+  ```
+
+Akses berhasil dengan adanyan Authorization, dan tiken terebut setelah di cek oleh midlleware rupanya benar, sehingga akses bisa diiznkan, dan mengeluarkan data message yang sesuai. Sekarang kita coba lagi, tapi akses endpoint `/private/settings` dengan header Authorization : 
+
+- Menggunakan cURL:
+
+```bash
+$ curl -X POST -H "Authorization: valid-token" http://localhost:8080/private/settings
+```
+
+- Output :
+
+```json
+{"message":"Settings updated successfully"}
+```
+
+Sesuai lagi karena adanya authorization, dengan pengecekan Middleware.Sekarang coba akses endpoint `/admin-dashboard` tanpa header Authorization :
+   
+- Browser : `http://localhost:8080/admin-dashboard`
+- Output :
+
+```json
+{"message":"Unauthorized"}
+```
+
+Ya, sama seperti sebelumnya, tak bisa akses tanpa ada token yang valid,yang kebetulan di handle oleh Middleware. Terakhir, akses endpoint `/admin-dashboard` dengan header Authorization :
+
+- Menggunakan cURL :
+
+```bash
+$ curl -H "Authorization: valid-token" http://localhost:8080/admin-dashboard
+```
+
+- Output :
+
+```json
+{"message":"Welcome to the admin dashboard"}
+```
+
+Penjelasan dari percobaan di atas : 
+
+- `LoggerMiddleware` akan mencatat setiap request ke terminal, lengkap dengan metode, path, IP, dan durasi proses.
+- `AuthMiddleware` memeriksa header `Authorization`. Jika token tidak sesuai, request dibatalkan dengan status 401.
+- Middleware bisa diterapkan secara global (`r.Use()`), pada group (`group.Use()`), atau pada rute tertentu (langsung di parameter handler).
+
+Dengan middleware, kode aplikasi menjadi lebih modular, rapi, dan mudah dikembangkan. Untuk source code lengkap dapat diakses di [3.2.3.2.TryMiddleware.go](../../source-code/chapter3/3.2.3.2.TryMiddleware.go).
+
+### 3.2.4 Static File Serving
+
+Dalam pengembangan backend, seringkali kita perlu menyajikan file statis seperti HTML, CSS, JavaScript, gambar, atau video langsung dari server. Gin-Gonic menyediakan fungsionalitas yang mudah untuk melakukan static file serving.
+
+Kapan menggunakan static file serving? Gunakan static file serving ketika memiliki file-file yang tidak berubah atau jarang berubah dan langsung dikirim ke browser klien. Ini sangat umum untuk :
+
+- Frontend aplikasi (jika membangun aplikasi Fullstack dengan Go sebagai backend dan menggunakan HTML/CSS/JS langsung).
+- Gambar, ikon, atau aset media lainnya.
+- File-file yang diunggah pengguna (misalnya, gambar profil).
+
+Gin menyediakan beberapa fungsi utama untuk static file serving :
+
+- `router.Static("/prefix", "folder")` : Menyajikan seluruh isi folder sebagai static file dengan prefix URL tertentu.
+- `router.StaticFile("/path", "file")` : Menyajikan satu file statis pada path tertentu.
+
+Misalkan kamu punya folder `assets` berisi file HTML, CSS, JS, dan gambar. Berikut contoh kode untuk menyajikan folder tersebut :
+
+3.2.4.StaticFileServing.go
+
+```go
+package main
+
+import (
+    "github.com/gin-gonic/gin"
+)
+
+func main() {
+    r := gin.Default()
+
+    // Serves the entire contents of the "3.2.4-StaticAssets" folder under the prefix "/static"
+    r.Static("/static", "./3.2.4-StaticAssets")
+
+    // Serves a single static file, e.g. favicon
+    r.StaticFile("/favicon.ico", "./3.2.4-StaticAssets/favicon.ico")
+
+    // Regular endpoint
+    r.GET("/", func(c *gin.Context) {
+        c.JSON(200, gin.H{"message": "Home page"})
+    })
+
+    r.Run(":8080")
+}
+```
+
+Penjelasan pada kode di atas :
+
+- Semua file di dalam folder `assets` bisa diakses melalui URL `http://localhost:8080/static/namafile.ext`.
+- Jika ada file `logo.png` di dalam `assets`, maka akses dengan `http://localhost:8080/static/logo.png`.
+- Untuk satu file khusus, misal favicon, bisa diakses langsung dengan `http://localhost:8080/favicon.ico`.
+
+Dengan struktur kode dan file statis :
+
+```
+3.2.4-StaticAssets/
+│   ├── index.html
+│   ├── logo.png
+│   └── favicon.ico
+├── 3.2.4.StaticFileServing.go
+```
+
+Kita jalankan server :
+
+```bash
+$ go run 3.2.4.StaticFileServing.go
+```
+
+Akses file statis di browser :
+
+- `http://localhost:8080/static/index.html`
+- `http://localhost:8080/static/logo.png`
+- `http://localhost:8080/favicon.ico`
+
+Berikut contohnya untuk mengakses `index.html` :
+
+![3.2.4.StaticFileServing.png](../../images/chapter3/3.2.4.StaticFileServing.png)
+
+Dengan static file serving di Gin, dapat dengan mudah mengintegrasikan frontend dan backend dalam satu aplikasi Go.
+
+Untuk source code lengkap, bisa akses di [3.2.4.StaticFileServing.go](../../source-code/chapter3/3.2.4.StaticFileServing.go).
+
+## 3.3 Request Handling
+
+Dalam membangun API dengan Gin, salah satu tugas utama adalah menerima, memproses, dan memvalidasi data yang masuk dari klien, lalu mengirimkan respons yang sesuai. Bagian ini akan membahas dasar-dasar penanganan permintaan, mulai dari mengikat data (binding), memvalidasi, hingga memformat respons.
+
+### 3.3.1 Binding request data (JSON, Form, Query)
+
+Saat klien mengirim data ke server (misalnya melalui formulir HTML, JSON body, atau parameter URL), Gin menyediakan cara yang mudah untuk mengambil dan mengikat data tersebut ke dalam struktur Go (struct). 
+
+Ini mempermudah kita untuk bekerja dengan data yang terstruktur dan meminimalisir kesalahan. Gin mendukung berbagai jenis pengikatan (binding), termasuk JSON, formulir (form), dan query parameters.
+
+#### 3.3.1.1 Pengikatan Data JSON
+
+Binding JSON adalah salah satu fitur yang paling sering digunakan, terutama untuk API RESTful. Gin dapat secara otomatis mengurai body permintaan JSON dan mengisi data ke dalam sebuah struct Go. Kita hanya perlu mendefinisikan struct yang sesuai dengan struktur JSON yang diharapkan, dan Gin akan menangani sisanya.
+
+> Keterangan : Pengujian POST memerlukan tools khusus seperti `cURL` pada terminal, Postman, atau Insomnia untuk mengirim permintaan.
+
+3.3.1.1.TryJSONData.go
+
+```go
+package main
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+// Define a struct to map incoming JSON data
+type User struct {
+	ID       string `json:"id" binding:"required"`
+	Username string `json:"username" binding:"required"`
+	Email    string `json:"email"`
+}
+
+func main() {
+	r := gin.Default()
+
+	// Endpoint to create a new user from JSON data
+	r.POST("/users", func(c *gin.Context) {
+		var user User
+		// Bind JSON data from request body to the 'user' struct
+		if err := c.ShouldBindJSON(&user); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		// If binding is successful, process the data
+		c.JSON(http.StatusCreated, gin.H{
+			"message":  "User created successfully",
+			"user_id":   user.ID,
+			"username": user.Username,
+			"email":    user.Email,
+		})
+	})
+
+	r.Run(":8080")
+}
+```
+
+Penjelasan terkait kode di atas :
+
+- Kita mendefinisikan struct `User` dengan field `ID`, `Username`, dan `Email`. Tag `json:"..."` digunakan untuk memetakan nama field Go ke nama key JSON. Tag `binding:"required"` akan digunakan oleh validasi Gin untuk memastikan field tersebut tidak kosong.
+- `c.ShouldBindJSON(&user)` adalah fungsi utama untuk mengikat data JSON. Fungsi ini mencoba mengurai request body sebagai JSON dan mengisi struct `user`. Jika ada kesalahan (misalnya, format JSON tidak valid atau field yang `required` hilang), ia akan mengembalikan error.
+- Jika binding berhasil, kita bisa mengakses data yang sudah terisi di struct `user` dan menggunakannya untuk logika bisnis.
+
+Oke, kita jalankan kode yang sudah dibuat :
+
+```bash
+$ go run 3.3.1.1.TryJSONData.go
+```
+
+Dan saatnya untuk mencoba pengiriman permintaan POST dengan body JSON :
+
+```bash
+$ curl -X POST -H "Content-Type: application/json" -d '{
+    "id": "123",
+    "username": "johndoe",
+    "email": "john@example.com"
+}' http://localhost:8080/users
+```
+
+Dan akhirnya sistem akan mengeluarkan hasil :
+
+```
+{"message":"User created successfully","user_id":"123","username":"johndoe","email":"john@example.com"}
+```
+
+Jika mencoba mengirim JSON yang tidak valid atau tanpa field username atau id (karena ditandai required), maka akan mendapatkan error seperti ini :
+
+```bash
+$ curl -X POST -H "Content-Type: application/json" -d '{"id": "123", "email": "john@example.com"}' http://localhost:8080/users
+```
+
+Output error :
+
+```
+{"error":"Key: 'User.Username' Error:Field validation for 'Username' failed on the 'required' tag"}
+```
+
+Ini menunjukkan bagaimana Gin secara otomatis menangani parsing JSON dan bahkan melakukan validasi dasar berdasarkan tag `binding`.
+
+Untuk mencoba code bisa mengakses [3.3.1.1.TryJSONData](../../source-code/chapter3/3.3.1.1.TryJSONData.go)
+
+#### 3.3.1.2 Pengikatan Data Formulir
+
+Binding formulir digunakan ketika klien mengirim data melalui HTML form (dengan `application/x-www-form-urlencoded` atau `multipart/form-data`). Gin juga dapat dengan mudah mengikat data formulir ke dalam sebuah struct.
+
+3.2
+
+```go
+package main
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+// Define a struct to map incoming form data
+type ProductForm struct {
+	Name        string `form:"name" binding:"required"`
+	Description string `form:"description"`
+	Price       float64 `form:"price"`
+}
+
+func main() {
+	r := gin.Default()
+
+	// Endpoint to create a new product from form data
+	r.POST("/products", func(c *gin.Context) {
+		var product ProductForm
+		// Bind form data from request body to the 'product' struct
+		if err := c.ShouldBind(&product); err != nil { // Use ShouldBind for form data
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		// If binding is successful, process the data
+		c.JSON(http.StatusCreated, gin.H{
+			"message":     "Product created successfully",
+			"product_name": product.Name,
+			"description": product.Description,
+			"price":       product.Price,
+		})
+	})
+
+	r.Run(":8080")
+}
+```
+
+#### 3.3.1.3 Pengikatan Query Parameters
+
+
+### 3.3.2 Request validation
+
+### 3.3.3 Response formatting (JSON, XML, HTML)
+
+#### 3.3.3.1 JSON Respons 
+
+#### 3.3.3.2 XML Response
+
+#### 3.3.3.3 HTML Response
+
+### 3.3.4 Error Handling Patterns
