@@ -97,13 +97,13 @@ $ go run 3.1-BasicGin.go
 Lalu buka browser dengan URL :
 
 ```url
-localhost:port/
+http://localhost:port/
 ```
 
 karena port yang ada di code adalah `8080`, maka akses dengan menggunakan :
 
 ```
-localhost:8080/
+http://localhost:8080/
 ```
 
 Maka akan keluar dengan di browser seperti ini : 
@@ -175,7 +175,7 @@ Kode di atas akan bermakna, jika server mendapatkan `/welcome` pada browser maka
 $ go run 3.2.1.1-1.TryGet.go
 ```
 
-Ketika di akses dengan menggunakan URL `localhost:8080/welcome` akan mengeluarkan  :
+Ketika di akses dengan menggunakan URL `http://localhost:8080/welcome` akan mengeluarkan  :
 
 ![3.2.1.1-1-1.TryGet.png](../../images/chapter3/3.2.1.1-1-1.TryGet.png)
 
@@ -214,17 +214,17 @@ Kita coba jalankan :
 ```bash
 $ go run 3.2.1.1-2.TryGet.go
 ```
-Ketika di akses dengan akses lokasi 'localhost:8080/checkserver' maka akan nampak :
+Ketika di akses dengan akses lokasi 'http://localhost:8080/checkserver' maka akan nampak :
 
 ![3.2.1.1-1-2.TryGet](../../images/chapter3/3.2.1.1-1-2.TryGet.png)
 
-Jika akses di browser antara `localhost:8080/welcome` dan `localhost:8080/checkserver` maka pasti akan berbeda output yang di keluarkan :
+Jika akses di browser antara `http://localhost:8080/welcome` dan `http://localhost:8080/checkserver` maka pasti akan berbeda output yang di keluarkan :
 
 ![3.2.1.1-1-2.TryGet](../../images/chapter3/3.2.1.1-1-2.TryGet.png)
 
 ![3.2.1.1-1-3.TryGet](../../images/chapter3/3.2.1.1-1-3.TryGet.png)
 
-Contoh kasus nyata lagi meminta data berdasarkan pada sebuah ID, kita panggil dengan penggunaan URL `localhost:8080/users/1` dengan kode :
+Contoh kasus nyata lagi meminta data berdasarkan pada sebuah ID, kita panggil dengan penggunaan URL `http://localhost:8080/users/1` dengan kode :
 
 3.2.1.1-3.TryGet.go
 
@@ -252,7 +252,7 @@ func main() {
 
 > `id := c.Param("id")` merupakan dua entitas yang satu variable sementara untuk menyimpan ID (id) dan fungsi untuk mendapatkan data yang diinginkan (c.Param), dinamakan Route Parameter, untuk lebih lanjut akan di bahas di Sub bab 3.2.2.1. 
 
-Maka ketika di panggil dengan `localhost:8080/user/1` maka akan menjawab :
+Maka ketika di panggil dengan `http://localhost:8080/user/1` maka akan menjawab :
 
 ![3.2.1.1-1-4.TryGet.png](../../images/chapter3/3.2.1.1-1-4.TryGet.png)
 
@@ -288,7 +288,7 @@ func main() {
 }
 ```
 
-> Untuk logika membuat user akan menyesuaikan dengan arsitektur dari sistem masing masing, code di atas hanya memberikan pesan bahwa fungsi POST berhasil, dan peneysuaian bisa di lihat pada bagian materi lebih lanjut
+> Untuk logika membuat user akan menyesuaikan dengan arsitektur dari sistem masing masing, code di atas hanya memberikan pesan bahwa fungsi POST berhasil, dan peneysuaian bisa di lihat pada bagian materi selanjutnya.
 
 Kode di atas akan membuat sebuah endpoint `/create-user` yang hanya menerima metode POST. Jika endpoint ini diakses dengan metode POST, server akan merespons dengan status `201 Created` dan sebuah pesan JSON.
 
@@ -304,7 +304,7 @@ Untuk mengujinya, gunakan `cURL` di terminal :
 $ curl -X POST http://localhost:8080/create-user
 ```
 
-Anda akan mendapatkan output JSON berikut :
+Dan akan mendapatkan output JSON berikut :
 
 ```json
 {"message":"User created successfully."}
@@ -317,7 +317,7 @@ $ curl -X GET http://localhost:8080/create-user
 404 page not found
 ```
 
-`/create-user` hanya menerima POST, jadi ketika menggunakan GET tidak akan bisa berjalan sesuai dengan kode. Sama seperti GET, kita bisa mendefinisikan beberapa route POST dalam satu aplikasi.
+`/create-user` hanya menerima POST, jadi ketika menggunakan GET tidak akan bisa berjalan sesuai dengan kode. Sama seperti GET, kita bisa mendefinisikan beberapa route POST dalam satu aplikasi. Oke, buat lagi mungkin yang spesifik :
 
 3.2.1.2-2.TryPost.go
 
@@ -332,15 +332,23 @@ import (
 func main() {
     router := gin.Default()
     
+    // Endpoint for making new users
     router.POST("/create-user", func(c *gin.Context) {
+        // Example : receive username data from form or JSON (simplified)
+        name := c.DefaultPostForm("name", "Anonymous")
         c.JSON(http.StatusCreated, gin.H{
             "message": "User created successfully.",
+            "user":    name,
         })
     })
 
+    // Endpoint for making new products
     router.POST("/create-product", func(c *gin.Context) {
+        // Example : receive product name data from form or JSON (simplified)
+        product := c.DefaultPostForm("product", "Unknown Product")
         c.JSON(http.StatusCreated, gin.H{
             "message": "Product created successfully.",
+            "product": product,
         })
     })
     
@@ -348,23 +356,37 @@ func main() {
 }
 ```
 
-Sekarang, jika Anda menjalankan kode di atas dan mengirim permintaan POST ke endpoint yang berbeda, Anda akan mendapatkan respons yang berbeda pula. Uji endpoint `/create-product` :
+Dengan kode di atas, Anda dapat menguji POST dengan data yang berbeda untuk setiap endpoint. Misalnya, untuk membuat user baru dengan nama:
 
 ```bash
-$ curl -X POST http://localhost:8080/create-product
+$ curl -X POST -d "name=Andi" http://localhost:8080/create-user
 ```
 
 Output :
 
 ```json
-{"message":"Produk berhasil dibuat."}
+{"message":"User created successfully.","user":"Andi"}
 ```
+
+Untuk membuat produk baru dengan nama produk :
+
+```bash
+$ curl -X POST -d "product=Laptop" http://localhost:8080/create-product
+```
+
+Output:
+
+```json
+{"message":"Product created successfully.","product":"Laptop"}
+```
+
+Jika tidak mengirim data, maka akan menggunakan nilai default yang sudah disediakan. Ini menunjukkan bagaimana POST dapat digunakan untuk menerima data dari client dan memberikan respons yang sesuai berdasarkan data yang dikirimkan.
 
 Ini menunjukkan bagaimana Gin dapat dengan mudah memetakan permintaan POST ke handler yang berbeda berdasarkan path URL. Untuk source code bisa dilihat di [3.2.1.2-1.TryPost.go](../../source-code/chapter3/3.2.1.2-1.TryPost.go) dan [3.2.1.2-2.TryPost.go](../../source-code/chapter3/3.2.1.2-2.TryPost.go).
 
 #### 3.2.1.3 PUT Method
 
-Metode PUT digunakan untuk memperbarui sumber daya yang sudah ada di server. Biasanya, permintaan PUT menyertakan ID dari sumber daya yang akan diubah di URL dan data baru di dalam request body.
+Metode PUT digunakan untuk memperbarui sumber daya yang sudah ada di server. Mirip seperti POST namun berbeda. Jika POST digunakan untuk membuat data baru, maka PUT digunakan untuk memperbarui data yang sudah ada atau membuat data jika belum ada (idempotent). Dengan kata lain, POST menambah data baru, sedangkan PUT mengganti seluruh data pada resource yang dituju. Biasanya, permintaan PUT menyertakan ID dari sumber daya yang akan diubah di URL dan data baru di dalam request body.
 
 > Keterangan : Sama seperti POST, pengujian PUT memerlukan tools khusus seperti `cURL`, Postman, atau Insomnia.
 
@@ -375,23 +397,29 @@ package main
 
 import (
     "net/http"
+
     "github.com/gin-gonic/gin"
 )
 
 func main() {
     router := gin.Default()
-    // Mendefinisikan route untuk metode PUT di path "/users/:id"
-    // :id adalah parameter dinamis yang bisa diambil dari URL
+    // Defines a route for the PUT method at the path "/users/:id"
+    // :id is a dynamic parameter that can be taken from the URL
     router.PUT("/users/:id", func(c *gin.Context) {
-        id := c.Param("id") // Mengambil nilai parameter "id" dari URL
-        // Logika untuk memperbarui user dengan ID tertentu akan ada di sini
+        id := c.Param("id") // Retrieving the "id" parameter value from the URL
+        // The logic for updating a user with a specific ID will be here.
         c.JSON(http.StatusOK, gin.H{
-            "message": "User dengan ID " + id + " berhasil diperbarui.",
+            "message": "User with ID " + id + " successfully updated.",
         })
     })
     router.Run(":8080")
 }
 ```
+
+> `id := c.Param("id")` merupakan dua entitas yang satu variable sementara untuk menyimpan ID (id) dan fungsi untuk mendapatkan data yang diinginkan (c.Param), dinamakan Route Parameter, untuk lebih lanjut akan di bahas di Sub bab 3.2.2.1. 
+
+> Untuk logika merubah isi user akan menyesuaikan dengan arsitektur dari sistem masing masing, code di atas hanya memberikan pesan bahwa fungsi PUT berhasil, dan peneysuaian bisa di lihat pada bagian materi selanjutnya.
+
 Kode di atas mendefinisikan endpoint `/users/:id` yang merespons metode PUT. Bagian `:id` adalah *route parameter* yang memungkinkan URL menjadi dinamis. Nilai dari `id` bisa diambil menggunakan `c.Param("id")`.
 
 Jalankan server :
@@ -406,14 +434,16 @@ Untuk mengujinya, gunakan `cURL` dan berikan ID user yang ingin di-update, misal
 $ curl -X PUT http://localhost:8080/users/123
 ```
 
-Anda akan mendapatkan output JSON berikut :
+Dan akan mendapatkan output JSON berikut :
+
 ```json
 {"message":"User dengan ID 123 berhasil diperbarui."}
 ```
 
-Kita juga bisa memiliki beberapa route PUT yang berbeda.
-
 3.2.1.3-2.TryPut.go
+
+Berikut contoh implementasi PUT yang lebih unik dan menjelaskan penggunaan PUT untuk memperbarui data produk berdasarkan ID, sekaligus menerima data baru dari client (misal nama produk) :
+
 ```go
 package main
 
@@ -424,41 +454,62 @@ import (
 
 func main() {
     router := gin.Default()
-    
-    router.PUT("/users/:id", func(c *gin.Context) {
+
+    // Endpoint to update product data based on ID
+    router.PUT("/products/:id", func(c *gin.Context) {
         id := c.Param("id")
+        // Get new product name data from form or JSON (simple)
+        newName := c.DefaultPostForm("name", "Produk Tanpa Nama")
         c.JSON(http.StatusOK, gin.H{
-            "message": "User dengan ID " + id + " berhasil diperbarui.",
+            "message": "Produk dengan ID " + id + " berhasil diperbarui.",
+            "new_name": newName,
         })
     })
 
-    router.PUT("/products/:productId", func(c *gin.Context) {
-        productId := c.Param("productId")
-        c.JSON(http.StatusOK, gin.H{
-            "message": "Produk dengan ID " + productId + " berhasil diperbarui.",
-        })
-    })
-    
     router.Run(":8080")
 }
 ```
-Uji endpoint `/products/:productId`:
+
+Jalankan server :
+
+```bash
+$ go run 3.2.1.3-2.TryPut.go
+```
+
+Untuk menguji endpoint PUT ini, gunakan perintah berikut dengan data nama produk baru :
+
+```bash
+$ curl -X PUT -d "name=Smartphone Baru" http://localhost:8080/products/abc-456
+```
+
+Sehingga, output yang dihasilkan :
+
+```json
+{"message":"Produk dengan ID abc-456 berhasil diperbarui.","new_name":"Smartphone Baru"}
+```
+
+Jika tidak mengirim data `name`, maka akan menggunakan nilai default :
+
 ```bash
 $ curl -X PUT http://localhost:8080/products/abc-456
 ```
 
 Output:
+
 ```json
-{"message":"Produk dengan ID abc-456 berhasil diperbarui."}
+{"message":"Produk dengan ID abc-456 berhasil diperbarui.","new_name":"Produk Tanpa Nama"}
 ```
 
-Ini menunjukkan fleksibilitas Gin dalam menangani pembaruan data untuk berbagai jenis sumber daya. Untuk source code bisa dilihat di []() dan []().
+Dengan demikian, contoh ini menunjukkan bahwa PUT digunakan untuk memperbarui data yang sudah ada, dan data baru dapat dikirim melalui request body. 
+
+Untuk source code lengkap dapat dilihat di [3.2.1.3-1.TryPut.go](../../source-code/chapter3/3.2.1.3-1.TryPut.go) dan [3.2.1.3-2.TryPut.go](../../source-code/chapter3/3.2.1.3-2.TryPut.go).
+
 
 #### 3.2.1.4 DELETE Method
 
-Metode DELETE digunakan untuk menghapus sumber daya tertentu dari server. Sama seperti PUT, permintaan DELETE biasanya menyertakan ID dari sumber daya yang akan dihapus di URL. Endpoint DELETE sangat umum digunakan pada API untuk menghapus data berdasarkan parameter unik, seperti ID.
+Metode DELETE digunakan untuk menghapus sumber daya tertentu dari server. Sama seperti PUT, permintaan DELETE biasanya menyertakan ID dari sumber daya yang akan dihapus di URL. DELETE digunakan ketika kita ingin menghapus data secara permanen dari sistem, misalnya menghapus user, produk, atau entitas lain berdasarkan ID.
 
-Contoh implementasi endpoint DELETE pada Gin :
+> Keterangan: Pengujian DELETE memerlukan tools khusus seperti `cURL`, Postman, atau Insomnia.
 
 3.2.1.4-1.TryDelete.go
 
@@ -472,19 +523,25 @@ import (
 
 func main() {
     router := gin.Default()
-    // Mendefinisikan route untuk metode DELETE di path "/users/:id"
+    // Defines a route for the DELETE method on the path "/users/:id"
     router.DELETE("/users/:id", func(c *gin.Context) {
-        id := c.Param("id") // Mengambil ID dari URL
-        // Logika untuk menghapus user dengan ID tertentu
+        id := c.Param("id") // Retrieving ID from URL
+        // Logic to delete user with specific ID
         c.JSON(http.StatusOK, gin.H{
-            "message": "User dengan ID " + id + " berhasil dihapus.",
+            "message": "User with ID " + id + " successfully deleted.",
         })
     })
     router.Run(":8080")
 }
 ```
 
-Jalankan server dengan perintah berikutb :
+> `id := c.Param("id")` merupakan dua entitas yang satu variable sementara untuk menyimpan ID (id) dan fungsi untuk mendapatkan data yang diinginkan (c.Param), dinamakan Route Parameter, untuk lebih lanjut akan di bahas di Sub bab 3.2.2.1. 
+
+> Untuk logika menghapus user akan menyesuaikan dengan arsitektur dari sistem masing masing, code di atas hanya memberikan pesan bahwa fungsi PUT berhasil, dan peneysuaian bisa di lihat pada bagian materi selanjutnya.
+
+Kode di atas mendefinisikan endpoint `/users/:id` yang hanya menerima metode DELETE. Bagian `:id` adalah *route parameter* yang memungkinkan URL menjadi dinamis. Nilai dari `id` bisa diambil menggunakan `c.Param("id")`.
+
+Jalankan server :
 
 ```bash
 $ go run 3.2.1.4-1.TryDelete.go
@@ -502,7 +559,7 @@ Output yang dihasilkan:
 {"message":"User dengan ID 42 berhasil dihapus."}
 ```
 
-Anda juga dapat menambahkan beberapa endpoint DELETE untuk sumber daya lain, misalnya produk:
+Sama seperti metode lain, kita juga bisa mendefinisikan beberapa endpoint DELETE untuk sumber daya berbeda. Berikut contoh untuk menghapus produk berdasarkan ID :
 
 3.2.1.4-2.TryDelete.go
 
@@ -535,7 +592,13 @@ func main() {
 }
 ```
 
-Uji endpoint `/products/:productId`:
+Jalankan server:
+
+```bash
+$ go run 3.2.1.4-2.TryDelete.go
+```
+
+Untuk menguji endpoint `/products/:productId`, gunakan perintah berikut:
 
 ```bash
 $ curl -X DELETE http://localhost:8080/products/abc-123
@@ -547,9 +610,9 @@ Output:
 {"message":"Produk dengan ID abc-123 berhasil dihapus."}
 ```
 
-Dengan demikian, Gin memudahkan pembuatan endpoint DELETE untuk berbagai jenis sumber daya. Untuk source code lengkap dapat dilihat di []() dan []().
+Dengan demikian, metode DELETE pada Gin sangat mudah digunakan untuk menghapus berbagai jenis sumber daya berdasarkan parameter dinamis di URL. Untuk source code lengkap dapat dilihat di [3.2.1.4-1.TryDelete.go](../../source-code/chapter3/3.2.1.4-1.TryDelete.go) dan [3.2.1.4-2.TryDelete.go](../../source-code/chapter3/3.2.1.4-2.TryDelete.go).
 
-### 3.2.2 Route Parameters dan Query parameters
+### 3.2.2 Route Parameters dan Query Parameters
 
 Seringkali, kita perlu menangani permintaan yang bervariasi berdasarkan data spesifik dalam URL. Gin menyediakan dua cara utama untuk menangani ini yaitu Route Parameters dan Query Parameters.
 
@@ -560,6 +623,8 @@ Route parameters adalah bagian dari URL yang memungkinkan kita menangkap nilai d
 Route parameters sangat berguna ketika kita ingin mengakses data spesifik berdasarkan identitas unik, seperti ID user, kode produk, atau slug artikel. Gunakan route parameters jika nilai tersebut merupakan bagian utama dari identitas sumber daya yang diakses.
 
 Berikut contoh implementasi route parameters di Gin :
+
+3.2.2.1-1.TryRouteParameters.go
 
 ```go
 package main
@@ -572,9 +637,9 @@ import (
 func main() {
     r := gin.Default()
 
-    // Mendefinisikan route dengan parameter dinamis ":id"
+    // Defining a route with the dynamic parameter ":id"
     r.GET("/users/:id", func(c *gin.Context) {
-        id := c.Param("id") // Mengambil nilai parameter "id" dari URL
+        id := c.Param("id") // Retrieves the "id" parameter value from the URL
         c.JSON(http.StatusOK, gin.H{
             "message": "Detail user dengan ID: " + id,
         })
@@ -584,57 +649,169 @@ func main() {
 }
 ```
 
-Ketika coba di akses
+`id := c.Param("id")` berarti mengambil nilai parameter bernama "id" dari URL pada objek context (`c`), lalu menyimpannya ke variabel `id`. Pada framework web seperti Gin di Go, ini digunakan untuk mendapatkan data dinamis dari bagian route, misalnya pada endpoint `/users/:id`, sehingga jika diakses `/users/5`, maka `id` akan berisi `"5"`. Cara ini sangat berguna untuk menangani permintaan berdasarkan identitas unik yang diberikan langsung di path URL.
+Ketika coba dijalankan dan diakses:
 
 ```bash
+$ go run 3.2.2.1-1.TryRouteParameters.go
+```
 
+Lalu buka browser atau gunakan cURL untuk mengakses endpoint, misalnya:
+
+```bash
+$ curl http://localhost:8080/users/42
+```
+
+Maka akan mendapatkan respons JSON :
+
+```json
+{"message":"Detail user dengan ID: 42"}
 ```
 
 Pada contoh di atas, jika ada permintaan ke `/users/42`, maka nilai `42` akan diambil melalui `c.Param("id")` dan dapat digunakan di dalam handler. Dengan demikian, route parameters memudahkan pembuatan endpoint yang fleksibel dan dinamis sesuai kebutuhan aplikasi.
 
-Untuk mencoba Routes Parameter, bisa menggunakan kode di atas, atau bisa di akses di 
+Selain `id`, kita bisa menggunakan nama parameter lain sesuai kebutuhan, misalnya `username`, `slug`, atau `productCode`. Berikut contoh implementasi route parameter dengan nama `username`:
 
-#### 3.2.2.2 Query Parameters
-
-Query parameters adalah pasangan kunci-nilai yang ditambahkan di akhir URL setelah tanda tanya (`?`). Mereka dipisahkan oleh ampersand (`&`). Contoh URL dengan query parameters adalah `/products?category=elektronik&sort=price_asc`. Di sini, category dan sort adalah query parameters.
-
-Untuk kapan menggunakan query parameters Gunakan query parameters untuk memfilter, mengurutkan, atau menyediakan data opsional yang tidak secara langsung mengidentifikasi sumber daya. Misalnya, untuk paginasi (page=1&limit=10), pencarian (q=laptop), atau filtering (status=active). Berikut contoh kodenya :
+3.2.2.1-2.TryRouteParametersUsername.go
 
 ```go
 package main
 
 import (
-	"net/http"
-
-	"github.com/gin-gonic/gin"
+    "net/http"
+    "github.com/gin-gonic/gin"
 )
 
 func main() {
-	r := gin.Default()
+    r := gin.Default()
 
-	// Mendefinisikan rute yang akan menggunakan query parameters
-	r.GET("/products", func(c *gin.Context) {
-		category := c.Query("category") // Mengambil nilai query parameter "category"
-		sort := c.Query("sort")         // Mengambil nilai query parameter "sort"
+    // Define a route with the dynamic parameter ":username"
+    r.GET("/profile/:username", func(c *gin.Context) {
+        username := c.Param("username")
+        c.JSON(http.StatusOK, gin.H{
+            "message": "Profile with username : " + username,
+        })
+    })
 
-		if category != "" && sort != "" {
-			c.JSON(http.StatusOK, gin.H{"message": "Mendapatkan produk kategori: " + category + " dengan sort: " + sort})
-		} else if category != "" {
-			c.JSON(http.StatusOK, gin.H{"message": "Mendapatkan produk kategori: " + category})
-		} else if sort != "" {
-			c.JSON(http.StatusOK, gin.H{"message": "Mendapatkan produk dengan sort: " + sort})
-		} else {
-			c.JSON(http.StatusOK, gin.H{"message": "Mendapatkan semua produk"})
-		}
-	})
-
-	r.Run(":8080")
+    r.Run(":8080")
 }
 ```
 
-Di sini, c.Query("category") dan c.Query("sort") digunakan untuk mengambil nilai dari query parameters. Kita juga bisa menggunakan c.DefaultQuery("paramName", "defaultValue") untuk memberikan nilai default jika parameter tidak ada.
+Jalankan server :
+
+```bash
+$ go run 3.2.2.1-2.TryRouteParametersUsername.go
+```
+
+Akses di browser atau cURL :
+
+```bash
+$ curl http://localhost:8080/profile/johndoe
+```
+
+Maka output :
+
+```json
+{"message":"Profil user dengan username : johndoe"}
+```
+
+Dengan demikian, Anda bisa menggunakan nama parameter apa pun sesuai kebutuhan pada route Gin.
+Untuk mencoba Route Parameters, bisa menggunakan kode di atas, atau akses source code pada [3.2.2.1-1.TryRouteParameters.go](../../source-code/chapter3/3.2.2.1-1.TryRouteParameters.go) dan [3.2.2.1-2.TryRouteParametersUsername.go](../../source-code/chapter3/3.2.2.1-2.TryRouteParametersUsername.go).
+
+#### 3.2.2.2 Query Parameters
+
+Query parameters adalah pasangan kunci-nilai yang ditempatkan di akhir URL setelah tanda tanya (`?`). Mereka digunakan untuk mengirimkan data tambahan yang bersifat opsional, seperti filter, urutan, pencarian, atau paginasi. Contoh penggunaan query parameters pada URL adalah :
+
+```
+/products?category=elektronik&sort=price_asc
+```
+
+Pada contoh di atas, `category` dan `sort` adalah query parameters yang dapat digunakan untuk memfilter produk berdasarkan kategori dan mengurutkan hasil berdasarkan harga.
+
+Kapan menggunakan query parameters? Gunakan query parameters ketika ingin memberikan opsi tambahan pada permintaan, seperti :
+
+- Memfilter data (misal : `?status=active`)
+- Mengurutkan hasil (misal : `?sort=price_desc`)
+- Melakukan pencarian (misal : `?q=laptop`)
+- Paginasi (misal : `?page=2&limit=20`)
+
+Query parameters tidak digunakan untuk mengidentifikasi sumber daya utama, melainkan untuk mengatur bagaimana data dikembalikan oleh server.
+Berikut contoh kode penggunaan query parameters pada Gin :
+
+3.2.2.2.TryQueryParameters.go
+
+```go
+package main
+
+import (
+    "net/http"
+    "github.com/gin-gonic/gin"
+)
+
+func main() {
+    r := gin.Default()
+
+    // Defines a route that accepts query parameters
+    r.GET("/products", func(c *gin.Context) {
+        category := c.Query("category") // Get the value of the query parameter "category"
+        sort := c.Query("sort") // Get the value of the query parameter "sort"
+
+        if category != "" && sort != "" {
+            c.JSON(http.StatusOK, gin.H{
+                "message": "Getting products in category: " + category + " with sort: " + sort,
+            })
+        } else if category != "" {
+            c.JSON(http.StatusOK, gin.H{
+                "message": "Getting products in category: " + category,
+            })
+        } else if sort != "" {
+            c.JSON(http.StatusOK, gin.H{
+                "message": "Getting products with sort: " + sort,
+            })
+        } else {
+            c.JSON(http.StatusOK, gin.H{
+                "message": "Getting all products",
+            })
+        }
+
+    r.Run(":8080")
+}
+```
+
+Pada kode di atas, handler `/products` akan membaca query parameters `category` dan `sort` menggunakan fungsi `c.Query("nama_parameter")`. Jika parameter tidak ada, maka akan bernilai string kosong. Anda juga bisa menggunakan `c.DefaultQuery("nama_parameter", "nilai_default")` untuk memberikan nilai default jika parameter tidak dikirimkan.
+
+Jalankan server :
+
+```bash
+$ go run 3.2.2.2.TryQueryParameters.go
+```
+
+Lalu akses endpoint dengan berbagai kombinasi query parameters:
+
+- Tanpa query parameter
+  ```
+  http://localhost:8080/products
+  ```
+  Output : `{"message":"Getting all products"}`
+
+- Dengan satu query parameter
+  ```
+  http://localhost:8080/products?category=electronic
+  ```
+  Output    : `{"message":"Getting products in category: electronic"}`
+
+- Dengan dua query parameter
+  ```
+  http://localhost:8080/products?category=electronic&sort=price_asc
+  ```
+  Output: `{"message":"Getting products in category: electronic with sort: price_asc"}`
+
+Dengan demikian, query parameters sangat berguna untuk membuat endpoint yang fleksibel dan dapat menangani berbagai kebutuhan filtering, sorting, dan pencarian data tanpa harus membuat banyak endpoint berbeda.
+
+Untuk mencoba kode di atas, Anda bisa menyalin kode atau mengakses source code pada [3.2.2.2.TryQueryParameters.go](../../source-code/chapter3/3.2.2.2.TryQueryParameters.go).
 
 ### 3.2.3 Route Groups dan Middlewares
+
 
 ### 3.2.4 Static file serving
 
