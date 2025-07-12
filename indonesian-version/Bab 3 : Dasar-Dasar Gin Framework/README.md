@@ -262,7 +262,7 @@ Untuk mencoba code bisa mengakses [3.2.1.1-1.TryGet.go](../../source-code/chapte
 
 Metode POST digunakan untuk mengirim data dari pengguna ke server untuk membuat sumber daya baru. Data yang dikirim biasanya berada di dalam body dari permintaan (request body). 
 
-> Keterangan : Pengujian POST memerlukan tools khusus seperti `cURL` pada terminal, Postman, atau Insomnia untuk mengirim permintaan.
+> Keterangan : Pengujian POST memerlukan tools khusus seperti `curl` pada terminal, Postman, atau Insomnia untuk mengirim permintaan.
 
 3.2.1.2-1.TryPost.go
 
@@ -298,7 +298,7 @@ Jalankan server :
 $ go run 3.2.1.2-1.TryPost.go
 ```
 
-Untuk mengujinya, gunakan `cURL` di terminal :
+Untuk mengujinya, gunakan `curl` di terminal :
 
 ```bash
 $ curl -X POST http://localhost:8080/create-user
@@ -388,7 +388,7 @@ Ini menunjukkan bagaimana Gin dapat dengan mudah memetakan permintaan POST ke ha
 
 Metode PUT digunakan untuk memperbarui sumber daya yang sudah ada di server. Mirip seperti POST namun berbeda. Jika POST digunakan untuk membuat data baru, maka PUT digunakan untuk memperbarui data yang sudah ada atau membuat data jika belum ada (idempotent). Dengan kata lain, POST menambah data baru, sedangkan PUT mengganti seluruh data pada resource yang dituju. Biasanya, permintaan PUT menyertakan ID dari sumber daya yang akan diubah di URL dan data baru di dalam request body.
 
-> Keterangan : Sama seperti POST, pengujian PUT memerlukan tools khusus seperti `cURL`, Postman, atau Insomnia.
+> Keterangan : Sama seperti POST, pengujian PUT memerlukan tools khusus seperti `curl`, Postman, atau Insomnia.
 
 3.2.1.3-1.TryPut.go
 
@@ -428,7 +428,7 @@ Jalankan server :
 $ go run 3.2.1.3-1.TryPut.go
 ```
 
-Untuk mengujinya, gunakan `cURL` dan berikan ID user yang ingin di-update, misalnya `123` :
+Untuk mengujinya, gunakan `curl` dan berikan ID user yang ingin di-update, misalnya `123` :
 
 ```bash
 $ curl -X PUT http://localhost:8080/users/123
@@ -509,7 +509,7 @@ Untuk source code lengkap dapat dilihat di [3.2.1.3-1.TryPut.go](../../source-co
 
 Metode DELETE digunakan untuk menghapus sumber daya tertentu dari server. Sama seperti PUT, permintaan DELETE biasanya menyertakan ID dari sumber daya yang akan dihapus di URL. DELETE digunakan ketika kita ingin menghapus data secara permanen dari sistem, misalnya menghapus user, produk, atau entitas lain berdasarkan ID.
 
-> Keterangan: Pengujian DELETE memerlukan tools khusus seperti `cURL`, Postman, atau Insomnia.
+> Keterangan: Pengujian DELETE memerlukan tools khusus seperti `curl`, Postman, atau Insomnia.
 
 3.2.1.4-1.TryDelete.go
 
@@ -547,7 +547,7 @@ Jalankan server :
 $ go run 3.2.1.4-1.TryDelete.go
 ```
 
-Untuk menguji endpoint DELETE, gunakan `cURL` di terminal:
+Untuk menguji endpoint DELETE, gunakan `curl` di terminal:
 
 ```bash
 $ curl -X DELETE http://localhost:8080/users/42
@@ -656,7 +656,7 @@ Ketika coba dijalankan dan diakses:
 $ go run 3.2.2.1-1.TryRouteParameters.go
 ```
 
-Lalu buka browser atau gunakan cURL untuk mengakses endpoint, misalnya:
+Lalu buka browser atau gunakan curl untuk mengakses endpoint, misalnya:
 
 ```bash
 $ curl http://localhost:8080/users/42
@@ -671,6 +671,8 @@ Maka akan mendapatkan respons JSON :
 Pada contoh di atas, jika ada permintaan ke `/users/42`, maka nilai `42` akan diambil melalui `c.Param("id")` dan dapat digunakan di dalam handler. Dengan demikian, route parameters memudahkan pembuatan endpoint yang fleksibel dan dinamis sesuai kebutuhan aplikasi.
 
 Selain `id`, kita bisa menggunakan nama parameter lain sesuai kebutuhan, misalnya `username`, `slug`, atau `productCode`. Berikut contoh implementasi route parameter dengan nama `username`:
+
+> Perlu di ingat kembali, untuk logika arsitektur untuk meneyesuaikan dari kegunaan aplikasi. Kode di atas hanya mengeluarkan pesan berhasil atau tidak.
 
 3.2.2.1-2.TryRouteParametersUsername.go
 
@@ -703,7 +705,7 @@ Jalankan server :
 $ go run 3.2.2.1-2.TryRouteParametersUsername.go
 ```
 
-Akses di browser atau cURL :
+Akses di browser atau curl :
 
 ```bash
 $ curl http://localhost:8080/profile/johndoe
@@ -778,6 +780,8 @@ func main() {
 ```
 
 Pada kode di atas, handler `/products` akan membaca query parameters `category` dan `sort` menggunakan fungsi `c.Query("nama_parameter")`. Jika parameter tidak ada, maka akan bernilai string kosong. Dan juga bisa menggunakan `c.DefaultQuery("nama_parameter", "nilai_default")` untuk memberikan nilai default jika parameter tidak dikirimkan.
+
+> Perlu di ingat kembali, untuk logika arsitektur untuk meneyesuaikan dari kegunaan aplikasi. Kode di atas hanya mengeluarkan pesan berhasil atau tidak.
 
 Jalankan server :
 
@@ -1028,7 +1032,7 @@ Hal ini karena `/public` tidak ada pengkhususan untuk mengakses API tersebut (lo
 
 Kenapa bisa gagal, karena untuk mengakses `/private/data` harus menggunakan authorization, sesuai kode, `/private/data` melewati middleware authentication yang ada validasi token, dan yang dilakukan sebelumnya tanpa mengirimkan token sehingga kredensial gagal dan akhirnya dikirim message berupa `unauthorized`. Sekarang kita coba akses endpoint `/private/data` dengan header Authorization : 
 
-- Menggunakan cURL :
+- Menggunakan curl :
   
   ```bash
   $ curl -H "Authorization: valid-token" http://localhost:8080/private/data
@@ -1042,7 +1046,7 @@ Kenapa bisa gagal, karena untuk mengakses `/private/data` harus menggunakan auth
 
 Akses berhasil dengan adanyan Authorization, dan tiken terebut setelah di cek oleh midlleware rupanya benar, sehingga akses bisa diiznkan, dan mengeluarkan data message yang sesuai. Sekarang kita coba lagi, tapi akses endpoint `/private/settings` dengan header Authorization : 
 
-- Menggunakan cURL:
+- Menggunakan curl:
 
 ```bash
 $ curl -X POST -H "Authorization: valid-token" http://localhost:8080/private/settings
@@ -1065,7 +1069,7 @@ Sesuai lagi karena adanya authorization, dengan pengecekan Middleware.Sekarang c
 
 Ya, sama seperti sebelumnya, tak bisa akses tanpa ada token yang valid,yang kebetulan di handle oleh Middleware. Terakhir, akses endpoint `/admin-dashboard` dengan header Authorization :
 
-- Menggunakan cURL :
+- Menggunakan curl :
 
 ```bash
 $ curl -H "Authorization: valid-token" http://localhost:8080/admin-dashboard
@@ -1179,7 +1183,7 @@ Ini mempermudah kita untuk bekerja dengan data yang terstruktur dan meminimalisi
 
 Binding JSON adalah salah satu fitur yang paling sering digunakan, terutama untuk API RESTful. Gin dapat secara otomatis mengurai body permintaan JSON dan mengisi data ke dalam sebuah struct Go. Kita hanya perlu mendefinisikan struct yang sesuai dengan struktur JSON yang diharapkan, dan Gin akan menangani sisanya.
 
-> Keterangan : Pengujian POST memerlukan tools khusus seperti `cURL` pada terminal, Postman, atau Insomnia untuk mengirim permintaan.
+> Keterangan : Pengujian POST memerlukan tools khusus seperti `curl` pada terminal, Postman, atau Insomnia untuk mengirim permintaan.
 
 3.3.1.1.TryJSONData.go
 
@@ -1230,6 +1234,8 @@ Penjelasan terkait kode di atas :
 - `c.ShouldBindJSON(&user)` adalah fungsi utama untuk mengikat data JSON. Fungsi ini mencoba mengurai request body sebagai JSON dan mengisi struct `user`. Jika ada kesalahan (misalnya, format JSON tidak valid atau field yang `required` hilang), ia akan mengembalikan error.
 - Jika binding berhasil, kita bisa mengakses data yang sudah terisi di struct `user` dan menggunakannya untuk logika bisnis.
 
+> Perlu di ingat kembali, untuk logika arsitektur untuk meneyesuaikan dari kegunaan aplikasi. Kode di atas hanya mengeluarkan pesan berhasil atau tidak.
+
 Oke, kita jalankan kode yang sudah dibuat :
 
 ```bash
@@ -1272,7 +1278,7 @@ Untuk mencoba code bisa mengakses [3.3.1.1.TryJSONData](../../source-code/chapte
 
 Binding formulir digunakan ketika klien mengirim data melalui HTML form (dengan `application/x-www-form-urlencoded` atau `multipart/form-data`). Gin juga dapat dengan mudah mengikat data formulir ke dalam sebuah struct.
 
-3.2
+3.3.1.2.TryFormData.go
 
 ```go
 package main
@@ -1315,17 +1321,487 @@ func main() {
 }
 ```
 
+Penjelasan dari kode di atas :
+
+- Struct `ProductForm` memiliki tag `form:"..."` untuk memetakan field Go ke nama field formulir.
+- `c.ShouldBind(&product)` digunakan untuk mengikat data formulir. Ini adalah fungsi yang lebih umum yang dapat mengikat berbagai jenis data (termasuk JSON jika Content-Type sesuai), tetapi paling sering digunakan untuk formulir.
+
+Dan sperti biasa kita coba dan kita jalankan : 
+
+```bash
+$ go run 3.3.1.2.TryFormData.go
+```
+
+Gunakan curl untuk mengirim permintaan POST dengan form data :
+
+```bash
+$ curl -X POST -d "name=Laptop XYZ&description=Powerful Laptop&price=1200.50" http://localhost:8080/products
+```
+
+Maka akan muncul output : 
+
+```
+{"message":"Product created successfully","price":1200.5,"product_name":"Laptop XYZ","description":"Powerful Laptop"}
+```
+
+Untuk mencoba kode bisa akses [3.3.1.2.TryFormData.go](../../source-code/chapter3/3.3.1.2.TryFormData.go).
+
 #### 3.3.1.3 Pengikatan Query Parameters
 
+Seperti yang sudah dibahas sebelumnya, query parameters digunakan untuk mengirim data opsional melalui URL. Gin juga memungkinkan mengikat query parameters ini langsung ke sebuah struct, yang sangat berguna untuk filter, paginasi, atau parameter pencarian yang kompleks.
+
+Langsung saja ke contoh kodenya :
+
+3.3.1.2.TryQueryData.go
+
+```go
+package main
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+// Define a struct to map incoming query parameters
+type SearchQuery struct {
+	Query    string `form:"q"`       // "form" tag also works for query params
+	Category string `form:"category"`
+	Page     int    `form:"page"`
+	Limit    int    `form:"limit"`
+}
+
+func main() {
+	r := gin.Default()
+
+	// Endpoint to search products with query parameters
+	r.GET("/search", func(c *gin.Context) {
+		var searchQuery SearchQuery
+		// Bind query parameters to the 'searchQuery' struct
+		if err := c.ShouldBindQuery(&searchQuery); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Set default values if not provided
+		if searchQuery.Page == 0 {
+			searchQuery.Page = 1
+		}
+		if searchQuery.Limit == 0 {
+			searchQuery.Limit = 10
+		}
+
+		// Process the search query
+		c.JSON(http.StatusOK, gin.H{
+			"message":   "Search results",
+			"query":     searchQuery.Query,
+			"category":  searchQuery.Category,
+			"page":      searchQuery.Page,
+			"limit":     searchQuery.Limit,
+		})
+	})
+
+	r.Run(":8080")
+}
+```
+
+Penjelasan kode di atas :
+
+- Struct `SearchQuery` menggunakan tag `form:"..."` untuk memetakan query parameters. Ya, tag form bisa juga digunakan untuk query parameters karena keduanya adalah bagian dari URL.
+- `c.ShouldBindQuery(&searchQuery)` secara spesifik mengikat query parameters dari URL ke 
+struct yang diberikan.
+
+Seperti biasa, kita coba jalankan dan uji :
+
+```bash
+$ go run 3.3.1.2.TryQueryData.go
+```
+
+Lalu untuk akses query nya :
+
+```
+http://localhost:8080/search?q=smartphone&category=electronics&page=2
+```
+
+Dan pasti akan keluar sesuai apa yang di query kan dari URL :
+
+```json
+{"category":"electronics","limit":10,"message":"Search results","page":2,"query":"smartphone"}
+```
+
+Sebenarnya, kalau di perhatikan, bagian ini mirip seperti query parameter yang sebelumnya di bahas, tetapi pada bagian ini lebih ke cara transaksi data tersebut.
+
+Bisa juga mencoba tanpa parameter, dan perhatikan bagaimana nilai Page dan Limit akan menggunakan nilai default yang kita set di kode :
+
+```
+http://localhost:8080/search
+```
+
+Maka outputnya :
+
+```json
+{"category":"","limit":10,"message":"Search results","page":1,"query":""}
+```
+
+Binding data di Gin sangat kuat dan fleksibel, memungkinkan untuk dengan mudah menangani data yang masuk dari berbagai sumber ke dalam aplikasi Go.
 
 ### 3.3.2 Request validation
 
-### 3.3.3 Response formatting (JSON, XML, HTML)
+Setelah data permintaan diikat (bind), langkah selanjutnya yang sangat penting adalah memvalidasinya. Validasi memastikan bahwa data yang diterima memenuhi kriteria tertentu (misalnya, tidak kosong, memiliki format yang benar, berada dalam rentang nilai tertentu) sebelum diproses oleh logika bisnis. Gin mengintegrasikan pustaka `go-playground/validator/v10` yang powerful untuk validasi, yang dapat diaktifkan melalui tag `binding` pada struct.
+
+Cara Kerja Validasi dengan Gin yaitu ketika menggunakan `c.ShouldBindJSON()`, `c.ShouldBind()`, atau `c.ShouldBindQuery()`, Gin secara otomatis akan mencoba memvalidasi data jika ada tag binding yang didefinisikan pada field struct.
+
+Contoh Umum Tag Validasi :
+
+- `required` : Field tidak boleh kosong.
+- `min=X` : Nilai numerik minimum adalah X.
+- `max=X` : Nilai numerik maksimum adalah X.
+- `len=X` : Panjang string atau slice harus X.
+- `email` : Harus berupa format email yang valid.
+- `url` : Harus berupa format URL yang valid.
+- `gte=X` : Nilai harus lebih besar atau sama dengan X.
+- `lte=X` : Nilai harus lebih kecil atau sama dengan X.
+- `alpha` : Hanya boleh berisi huruf.
+- `alphanum` : Hanya boleh berisi huruf dan angka.
+- `numeric` : Hanya angka.
+
+Lihat daftar lengkap tag validasi di dokumentasi [go-playground/validator]().
+
+Sebelumnya beberapa contoh sudah menerapkan validasi ini, namun kita ulangi saja karena tidak eksplisit di bahas, berikut contoh kodenya :
+
+3.3.2-TryRequestValidation.go
+
+```go
+package main
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+// Define struct for user registration with validation tags
+type RegisterUser struct {
+	Username string `json:"username" binding:"required,min=5,max=20"` // Must be 5-20 characters
+	Email    string `json:"email" binding:"required,email"`         // Must be a valid email format
+	Password string `json:"password" binding:"required,min=6"`      // Must be at least 6 characters
+	Age      int    `json:"age" binding:"gte=18"`                     // Must be 18 or older
+}
+
+func main() {
+	r := gin.Default()
+
+	// Endpoint for user registration with validation
+	r.POST("/register", func(c *gin.Context) {
+		var user RegisterUser
+		if err := c.ShouldBindJSON(&user); err != nil {
+			// If validation fails, Gin's binding error will contain details
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+
+		// If validation is successful, proceed with user creation
+		c.JSON(http.StatusCreated, gin.H{
+			"message":  "User registered successfully!",
+			"username": user.Username,
+			"email":    user.Email,
+			"age":      user.Age,
+		})
+	})
+
+	r.Run(":8080")
+}
+```
+
+Berikut penjelasan kode di atas :
+
+- Setiap field di struct `RegisterUser11 sekarang memiliki tag binding yang mendefinisikan aturan validasinya.
+- `c.ShouldBindJSON(&user)` tidak hanya mengikat data tetapi juga secara otomatis menjalankan validasi berdasarkan tag tersebut.
+- Jika ada aturan yang tidak terpenuhi, `c.ShouldBindJSON` akan mengembalikan error yang berisi detail validasi yang gagal. Kita menangkap error ini dan mengirimkannya kembali ke klien dengan status `400 Bad Request`.
+
+> Perlu di ingat kembali, untuk logika arsitektur untuk meneyesuaikan dari kegunaan aplikasi. Kode di atas hanya mengeluarkan pesan berhasil atau tidak.
+
+Kita coba jalankan kodenya dan uji :
+
+```bash
+$ go run 3.3.2-TryRequestValidation.go
+```
+
+Kita coba dulu dengan data yang valid (memenuhi dengan format) :
+
+```bash
+$ curl -X POST -H "Content-Type: application/json" -d '{
+    "username": "superuser",
+    "email": "user@example.com",
+    "password": "strongpassword",
+    "age": 25
+}' http://localhost:8080/register
+```
+
+Dan sudah di tebak bahwa output berhasil :
+
+```json
+{"age":25,"email":"user@example.com","message":"User registered successfully!","username":"superuser"}
+```
+
+Let's say kita buat salah, username terlalu pendek :
+
+```bash
+$ curl -X POST -H "Content-Type: application/json" -d '{
+    "username": "sup",
+    "email": "user@example.com",
+    "password": "strongpassword",
+    "age": 25
+}' http://localhost:8080/register
+```
+
+Maka kalau kita akan mendapat output :
+
+```json
+{"error":"Key: 'RegisterUser.Username' Error:Field validation for 'Username' failed on the 'min' tag"}
+```
+
+Kita coba lagi dengan mengisi data tidak valid (email tidak valid) :
+
+```bash
+$ curl -X POST -H "Content-Type: application/json" -d '{
+    "username": "validuser",
+    "email": "invalid-email",
+    "password": "mypassword",
+    "age": 16
+}' http://localhost:8080/register
+```
+
+Maka sudah seperti yang sudah di prediksi :
+
+```json
+{"error":"Key: 'RegisterUser.Email' Error:Field validation for 'Email' failed on the 'email' tag"}
+```
+
+Ya, pasti bakal ada error karena memang tidak sesuai. Jadi begitulah penggunaan dari Request Validation.
+
+Untuk mencoba dari kode tersebut bisa di akses melalui [3.3.2-TryRequestValidation.go
+](../../source-code/chapter3/3.3.2-TryRequestValidation.go)
+
+### 3.3.3 Response Formatting (JSON, XML, HTML)
+
+Setelah memproses permintaan, server perlu mengirimkan respons kembali ke klien. Gin menyediakan berbagai metode untuk memformat respons, yang paling umum adalah JSON, tetapi juga mendukung XML, HTML, dan plain text. Memilih format respons yang tepat tergantung pada kebutuhan klien dan jenis aplikasi.
 
 #### 3.3.3.1 JSON Respons 
 
+JSON (JavaScript Object Notation) adalah format data paling populer untuk API modern karena ringan, mudah dibaca manusia, dan mudah diurai oleh mesin. Gin sangat optimal untuk menghasilkan respons JSON.
+
+3.3.3.1.TryJSONResponse.go
+
+```go
+package main
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+func main() {
+	r := gin.Default()
+
+	// Respond with a simple JSON message
+	r.GET("/json-message", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"status":  "success",
+			"message": "This is a JSON response!",
+			"code":    200,
+		})
+	})
+
+	// Respond with JSON from a Go struct
+	r.GET("/json-user", func(c *gin.Context) {
+		user := struct {
+			ID   string `json:"id"`
+			Name string `json:"name"`
+			Role string `json:"role"`
+		}{
+			ID:   "USR001",
+			Name: "Alice Smith",
+			Role: "Administrator",
+		}
+		c.JSON(http.StatusOK, user)
+	})
+
+	r.Run(":8080")
+}
+```
+
+Penjelasan kode di atas :
+
+- `c.JSON(statusCode, data)` : Metode paling umum untuk mengirim respons JSON.
+   - `statusCode` : Kode status HTTP (misalnya `http.StatusOK` untuk 200).
+   - `data` : Data yang akan di-serialize ke JSON. Ini bisa berupa `gin.H` (tipe alias untuk `map[string]interface{}`), struct Go, slice, atau tipe data lainnya yang dapat di-marshal ke JSON.
+- Gin secara otomatis mengatur header `Content-Type` menjadi `application/json`.
+
+Seperti biasa kita akan jalankan :
+
+```bash
+$ go run 3.3.3.1.TryJSONResponse.go
+```
+
+Dan kita akan coba akses endpoint :
+
+```
+http://localhost:8080/json-message
+```
+
+Dan bakal di lihat output yang berhasil :
+
+```json
+{"code":200,"message":"This is a JSON response!","status":"success"}
+```
+
+Kita coba hal yang beda :
+
+```
+http://localhost:8080/json-user
+```
+
+Dan inilah hasil outputnya :
+
+```json
+{"id":"USR001","name":"Alice Smith","role":"Administrator"}
+```
+
+Dengan ini kita juga makin memahami JSON format yang digunakan pada Gin. Dan ya, untuk mencoba kode di atas bisa mengakses [3.3.3.1.TryJSONResponse.go](../../source-code/chapter3/3.3.2-TryRequestValidation.go).
+
 #### 3.3.3.2 XML Response
 
+Meskipun kurang umum dibandingkan JSON, beberapa sistem lama atau spesifik mungkin masih memerlukan respons dalam format XML (Extensible Markup Language). Gin juga mendukung pengiriman respons XML.
+
+3.3.3.2-XMLResponse.go
+
+```go
+package main
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+func main() {
+	r := gin.Default()
+
+	// Respond with XML from a Go struct
+	r.GET("/xml-product", func(c *gin.Context) {
+		type Product struct {
+			XMLName     struct{} `xml:"product"` // Defines root XML element name
+			Name        string   `xml:"name"`
+			Price       float64  `xml:"price"`
+			Description string   `xml:"description,omitempty"` // omitempty if field is empty
+		}
+		product := Product{
+			Name:        "Wireless Earbuds",
+			Price:       59.99,
+			Description: "High-quality sound with noise cancellation.",
+		}
+		c.XML(http.StatusOK, product)
+	})
+
+	r.Run(":8080")
+}
+```
+
+Penjelasan kode terkait di atas :
+
+- `c.XML(statusCode, data)` : Metode untuk mengirim respons XML.
+- Kita perlu menggunakan tag `xml:"..."` pada struct untuk memetakan field Go ke elemen XML atau atribut. `XMLName` digunakan untuk menentukan nama elemen root.
+- Gin secara otomatis mengatur header `Content-Type` menjadi `application/xml`.
+
+Kita mulai untuk menjalankan kode di atas :
+
+```bash
+$ go run 3.3.3.2-XMLResponse.go
+```
+
+Kita akses endpoint seperti biasa :
+
+```
+http://localhost:8080/xml-product
+```
+
+Dan akan beroutput sesuai dengan format yang sudah di tentukan : 
+
+```xml
+<product><name>Wireless Earbuds</name><price>59.99</price><description>High-quality sound with noise cancellation.</description></product>
+```
+
 #### 3.3.3.3 HTML Response
+
+Jika membangun aplikasi web server-side rendered atau ingin menyajikan halaman HTML statis/dinamis, Gin dapat merespons dengan HTML. Untuk HTML dinamis, Gin terintegrasi dengan mesin template Go. Berikut untuk contoh langsung untuk HTML based respons : 
+
+3.3.3.3.TryHTMLResponse.go
+
+```go
+package main
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+func main() {
+	r := gin.Default()
+
+	// Load HTML templates from the "templates" directory
+	// Gin will parse all files ending with .html in the "templates" folder
+	r.LoadHTMLGlob("3.3.2-HTML/*")
+
+	// Endpoint to render an HTML template
+	r.GET("/html-page", func(c *gin.Context) {
+		// Render "index.html" template with data
+		c.HTML(http.StatusOK, "index.html", gin.H{
+			"title":   "Welcome to Gin HTML",
+			"message": "Hello from Gin-Gonic!",
+		})
+	})
+
+	// Serve a simple static HTML file (if needed, though Static is better for folders)
+	r.GET("/static-html", func(c *gin.Context) {
+		c.Data(http.StatusOK, "text/html; charset=utf-8", []byte(`<h1>This is a Static HTML Page</h1><p>Served directly as raw data.</p>`))
+	})
+
+	r.Run(":8080")
+}
+```
+
+Dan kita buat HTML nya untuk mencoba dari Gin HTML Response itu :
+
+index.html
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ .title }}</title>
+    <style>
+        body { font-family: sans-serif; margin: 50px; background-color: #f0f0f0; }
+        h1 { color: #333; }
+        p { color: #666; }
+    </style>
+</head>
+<body>
+    <h1>{{ .title }}</h1>
+    <p>{{ .message }}</p>
+</body>
+</html>
+```
+
+Penjelasan Kode di atas :
+
+- `r.LoadHTMLGlob("3.3.2-HTML/*")` : Menginstruksikan Gin untuk memuat semua file .html di dalam folder templates sebagai template.
+- `c.HTML(statusCode, templateName, data)` : Metode untuk merender template HTML.
+      - `templateName` : Nama file template (misal: "index.html").
+      - `data` : Data yang akan diteruskan ke template. Ini bisa berupa `gin.H` atau struct. Data ini dapat diakses di template menggunakan sintaks `{{ .key }}`.
+- `c.Data(statusCode, contentType, data)` : Metode generik untuk mengirim data mentah (raw data) dengan Content-Type tertentu, berguna untuk HTML statis singkat atau data non-JSON/XML lainnya.
+
 
 ### 3.3.4 Error Handling Patterns
