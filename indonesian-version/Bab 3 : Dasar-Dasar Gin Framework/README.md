@@ -1773,7 +1773,7 @@ func main() {
 }
 ```
 
-Dan kita buat HTML nya untuk mencoba dari Gin HTML Response itu :
+Dan kita juga buat HTML nya untuk mencoba dari Gin HTML Response itu :
 
 index.html
 
@@ -1799,9 +1799,373 @@ Penjelasan Kode di atas :
 
 - `r.LoadHTMLGlob("3.3.2-HTML/*")` : Menginstruksikan Gin untuk memuat semua file .html di dalam folder templates sebagai template.
 - `c.HTML(statusCode, templateName, data)` : Metode untuk merender template HTML.
-      - `templateName` : Nama file template (misal: "index.html").
+      - `templateName` : Nama file template (misal: "`index.html`").
       - `data` : Data yang akan diteruskan ke template. Ini bisa berupa `gin.H` atau struct. Data ini dapat diakses di template menggunakan sintaks `{{ .key }}`.
 - `c.Data(statusCode, contentType, data)` : Metode generik untuk mengirim data mentah (raw data) dengan Content-Type tertentu, berguna untuk HTML statis singkat atau data non-JSON/XML lainnya.
 
+Dan kita langsung jalankan kodenya : 
+
+```bash
+$ go run 3.3.3.3.TryHTMLResponse.go
+```
+
+Kita akses endpointnya :
+
+```
+http://localhost:8080/html-page
+```
+
+Maka akan terlihat halaman HTML yang dirender dengan "Welcome to Gin HTML" dan "Hello from Gin-Gonic!".
+
+Memformat respons dengan benar adalah kunci untuk membuat API yang konsisten dan mudah digunakan oleh klien. Gin memberikan fleksibilitas untuk memilih format yang paling sesuai untuk setiap kasus penggunaan.
+
+Untuk mencoba kode di atas bisa akses [ 3.3.3.3.TryHTMLResponse.go](../../source-code/chapter3/3.3.3.3.TryHTMLResponse.go).
 
 ### 3.3.4 Error Handling Patterns
+
+Penanganan error adalah aspek krusial dalam membangun aplikasi yang robust dan andal. Dalam Gin, ada beberapa pola untuk menangani error, mulai dari error yang terjadi saat binding atau validasi data, error saat logika bisnis berjalan, hingga penanganan panic yang tidak terduga. Penanganan error yang baik memastikan bahwa aplikasi tetap stabil dan memberikan informasi yang jelas kepada klien saat terjadi masalah.
+
+Gin memiliki mekanisme middleware `Recovery` bawaan (termasuk dalam `gin.Default()`) yang menangkap panic dan mencegah aplikasi crash total, serta mengembalikan respons error 500. Namun, untuk error yang terkontrol (seperti validasi gagal atau data tidak ditemukan), kita perlu menanganinya secara eksplisit.
+
+Kita akan ulik untuk penaganan error yang umum di gunakan : 
+
+#### 3.3.4.1 Mengembalikan Status HTTP dan Pesan JSON/XML
+
+Ini adalah pola paling umum untuk API. Saat terjadi error, kita mengembalikan kode status HTTP yang sesuai (misal: 400 Bad Request, 401 Unauthorized, 404 Not Found, 500 Internal Server Error) beserta pesan error dalam format JSON atau XML.
+
+3.3.4.1.ErrorHandlingHTTP.go
+
+```go
+package main
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+func main() {
+	r := gin.Default()
+
+	r.GET("/user/:id", func(c *gin.Context) {
+		id := c.Param("id")
+
+		// Simulate a database lookup error or user not found
+		if id == "not-found" {
+			c.JSON(http.StatusNotFound, gin.H{
+				"status":  "error",
+				"message": "User not found",
+				"code":    http.StatusNotFound,
+			})
+			return // Stop processing
+		}
+
+		// Simulate an internal server error (e.g., database connection issue)
+		if id == "server-error" {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"status":  "error",
+				"message": "Internal server error occurred",
+				"code":    http.StatusInternalServerError,
+			})
+			return // Stop processing
+		}
+
+		// If no error, return success
+		c.JSON(http.StatusOK, gin.H{
+			"status":  "success",
+			"message": "User data for ID: " + id,
+			"code":    http.StatusOK,
+		})
+	})
+
+	r.Run(":8080")
+}
+```
+
+Penjelasan kode di atas adalah :
+
+- Kita menggunakan `c.JSON(statusCode, data)` untuk mengirim respons error.
+- Penting untuk selalu memanggil`return` setelah mengirim respons error agar eksekusi handler berhenti dan tidak melanjutkan ke logika yang tidak seharusnya.
+
+Setelah bekerja dan menguji dengan menjalankan perintah :
+
+```bash
+$ go run 3.3.4.1.ErrorHandlingHTTP.go
+```
+
+Kita uji endpoint dengan skenario bahwa sistem sukses tanpa ada masalah :
+
+```
+http://localhost:8080/user/123
+```
+
+Maka akan menghasilkan output : `Akan menghasilkan sukses.`. Sekarang jika pada kode misal ada status error bahwa user tidak ditemukan :
+
+```
+http://localhost:8080/user/not-found
+```
+
+Maka akan output pemberitahuan error dengan kondisi : `Akan menghasilkan 404 Not Found.`. Kita coba lagi apabila server ada yang error :
+
+```
+http://localhost:8080/user/server-error
+```
+
+Maka akan sesuai dengan hasil bahwa status error : `Akan menghasilkan 500 Internal Server Error.`.
+
+Error handling tipe ini menggunakan status kode HTTP yang sesuai (seperti 404 untuk data tidak ditemukan atau 500 untuk kesalahan server) dan mengirimkan pesan error dalam format JSON ke klien. 
+
+Dengan pola ini, API menjadi lebih mudah dipahami dan diintegrasikan karena klien dapat langsung mengetahui jenis error yang terjadi melalui status kode dan pesan yang jelas, serta eksekusi handler langsung dihentikan setelah respons error dikirim.
+
+Untuk percobaan dan menggunakan kode ini [3.3.4.1.ErrorHandlingHTTP.go](../../source-code/chapter3/3.3.4.1.ErrorHandlingHTTP.go)
+
+#### 3.3.4.2 Menggunakan `c.AbortWithStatusJSON()`
+
+Ketika ingin menghentikan pemrosesan permintaan segera (misalnya, karena middleware autentikasi gagal) dan mengirim respons JSON, `c.AbortWithStatusJSON()` adalah pilihan yang tepat. Fungsi ini akan membatalkan sisa rantai middleware dan handler serta mengirim respons.
+
+3.3.4.2.ErrorHandlingAbortJSON.go
+
+```go
+package main
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+// Auth middleware (revisited)
+func AuthMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		token := c.GetHeader("Authorization")
+		if token != "valid-token" {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+				"status":  "error",
+				"message": "Unauthorized access",
+				"code":    http.StatusUnauthorized,
+			})
+			return
+		}
+		c.Next()
+	}
+}
+
+func main() {
+	r := gin.Default()
+
+	r.GET("/protected", AuthMiddleware(), func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"message": "You accessed protected data!"})
+	})
+
+	r.Run(":8080")
+}
+```
+
+Penjelasan dari kode di atas :
+
+- Jika `AuthMiddleware` mendeteksi token tidak valid, ia memanggil `c.AbortWithStatusJSON` untuk menghentikan request dan mengirim respons 401. Handler `/protected` tidak akan pernah dieksekusi.
+
+Untuk menguji dari kode di atas bisa kita run :
+
+```bash
+$ go run 3.3.4.1.ErrorHandlingAbortJSON.go
+```
+
+Kita coba akses normal : 
+
+```
+http://localhost:8080/protected:
+```
+
+Maka jelas, pasti akan : `401 Unauthorized` Namun jika ada tambahan maka akan menghasilkan status : 
+
+```bash
+curl -H "Authorization: valid-token" http://localhost:8080/protected
+```
+
+maka akan menghasilkan status sukses.
+
+Error handling tipe ini memastikan aplikasi memberikan respons yang jelas dan terstruktur saat terjadi masalah, dengan mengirimkan status kode HTTP yang sesuai (seperti 404 atau 500) dan pesan error dalam format JSON. Pola ini memudahkan klien untuk memahami jenis error yang terjadi dan menjaga agar eksekusi handler berhenti setelah respons error dikirim, sehingga aplikasi tetap stabil dan mudah diintegrasikan.
+
+Untuk mencoba kode di atas bisa akses [3.3.4.2.ErrorHandlingAbortJSON.go](../../source-code/chapter3/3.3.4.2.ErrorHandlingAbortJSON.go)
+
+#### 3.3.4.3 Mencatat Error (Logging Errors)
+
+Selain mengembalikan error ke klien, penting juga untuk mencatat error di sisi server. Ini membantu dalam debugging dan pemantauan kesehatan aplikasi. Gin's `Logger` middleware (dari `gin.Default()`) sudah mencatat request, tetapi Anda mungkin ingin mencatat error spesifik yang terjadi di logika bisnis Anda.
+
+3.3.4.3.ErrorHandlingLoging.go
+
+```go
+package main
+
+import (
+	"log" // For simple logging
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+func main() {
+	r := gin.Default() // Includes Logger and Recovery middleware
+
+	r.POST("/process-data", func(c *gin.Context) {
+		var input struct {
+			Value int `json:"value"`
+		}
+
+		if err := c.ShouldBindJSON(&input); err != nil {
+			log.Printf("ERROR: Invalid JSON input: %v", err) // Log the error
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+			return
+		}
+
+		if input.Value < 0 {
+			// Log a specific business logic error
+			log.Printf("ERROR: Negative value received for processing: %d", input.Value)
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Value cannot be negative"})
+			return
+		}
+
+		// Simulate some processing that might fail
+		if input.Value == 999 {
+			log.Println("CRITICAL ERROR: Simulated database write failure!") // Log critical error
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to process data due to internal issue"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"message": "Data processed successfully", "value": input.Value})
+	})
+
+	r.Run(":8080")
+}
+```
+
+Penjelasan kode di atas : 
+
+- Kita menggunakan `log.Printf` atau `log.Println` dari package standar `log` untuk mencatat error ke konsol server. Dalam aplikasi produksi, Anda akan menggunakan pustaka logging yang lebih canggih (seperti logrus atau zap) untuk mencatat ke file atau sistem monitoring.
+
+Kita uji kode di atas :
+
+```bash
+$ go run 3.3.4.3.ErrorHandlingLoging.go
+```
+
+Lalu kirim request dengan input JSON yang valid :
+
+```bash
+$ curl -X POST -H "Content-Type: application/json" -d '{"value": 10}' http://localhost:8080/process-data
+```
+
+Maka akan mengeluarkan dengan status `{"message":"Data processed successfully","value":10}`. Kita coba lagi, kirim request dengan input JSON yang invalid (misal, value negatif):
+    
+```bash
+$ curl -X POST -H "Content-Type: application/json" -d '{"value": -5}' http://localhost:8080/process-data
+```
+
+maka outputnya jelas : 
+
+```json
+{"error":"Value cannot be negative"}`
+```
+
+dan di terminal server akan muncul log :
+
+```bash
+ERROR: Negative value received for processing: -5
+```
+
+Kita coba lagi dengan mengirim request dengan value khusus untuk simulasi error (misal, value 999) :
+
+```bash
+$ curl -X POST -H "Content-Type: application/json" -d '{"value": 999}' http://localhost:8080/process-data
+```
+   
+Maka outputnya :
+
+```json
+{"error":"Failed to process data due to internal issue"}
+```
+
+Di terminal server akan muncul log:
+    
+```bash
+CRITICAL ERROR: Simulated database write failure!
+```
+
+Terakhir. kita coba dengan kirim request dengan format JSON yang salah:
+    
+```bash
+$ curl -X POST -H "Content-Type: application/json" -d '{"val": "abc"}' http://localhost:8080/process-data
+```
+
+Maka outputnya :
+    
+```json
+{"error":"Invalid input data"}
+```
+
+Di terminal server akan muncul log error parsing JSON. Dengan cara di atas, kita bisa melihat respons API dan juga log error yang dicatat di terminal server sesuai skenario yang diuji.
+
+Catatan Tambahan, log bawaan Gin (melalui middleware Logger) hanya mencatat aktivitas request-response seperti waktu, metode, path, status, dan durasi. Log ini berguna untuk pemantauan trafik dan performa aplikasi.
+
+Log error handling yang Anda tambahkan sendiri (`log.Printf`/`log.Println`) mencatat detail error spesifik yang terjadi di logika bisnis aplikasi, seperti input tidak valid, nilai negatif, atau kegagalan proses. Log ini membantu developer memahami dan menelusuri masalah spesifik yang tidak tercakup oleh log request standar Gin.
+
+Jadi, log Gin bersifat umum untuk request, sedangkan log error handling sendiri bersifat khusus untuk kejadian error di aplikasi. Keduanya saling melengkapi untuk debugging dan monitoring aplikasi.
+
+Untuk mencoba code di atas bisa akses [3.3.4.3.ErrorHandlingLoging.go](../../source-code/chapter3/3.3.4.3.ErrorHandlingLoging.go)
+
+#### 3.3.4.4 Penanganan Panic (Recovery Middleware)
+
+Seperti yang disebutkan, `gin.Default()` sudah menyertakan `Recovery` middleware. Ini sangat penting untuk mencegah aplikasi crash total jika terjadi `panic` (kesalahan runtime yang tidak tertangkap). `Recovery` akan menangkap `panic`, mencatatnya, dan mengembalikan respons error 500 ke klien.
+
+3.3.4.4.ErrorHandlingRecoveryMiddleware.go
+
+```go 
+package main
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+func main() {
+	r := gin.Default() // Includes Recovery middleware by default
+
+	r.GET("/cause-panic", func(c *gin.Context) {
+		// Simulate a panic (e.g., trying to access nil pointer)
+		var data []int
+		_ = data[0] // This will cause a panic
+		c.JSON(http.StatusOK, gin.H{"message": "This will not be reached"})
+	})
+
+	r.Run(":8080")
+}
+```
+
+Cara Menguji kode di atas :
+
+```bash
+$ go run 3.3.4.4.ErrorHandlingRecoveryMiddleware.go
+```
+
+Akses endpoint berikut di browser atau dengan curl :
+
+```
+http://localhost:8080/cause-panic
+```
+
+Hasil yang didapat :
+
+- Di browser atau curl, Anda akan menerima respons error dengan status HTTP 500 Internal Server Error.
+- Di terminal server, Gin akan mencatat stack trace dari panic yang terjadi, berkat Recovery middleware. Log ini akan membantu developer mengetahui sumber masalah tanpa membuat aplikasi crash total. 
+
+Pola penanganan error yang efektif dalam Gin adalah kombinasi dari :
+
+- Memberikan respons yang jelas dan terstruktur kepada klien (status kode dan pesan error).
+- Mencatat error secara informatif di sisi server (logging).
+- Menggunakan mekanisme recovery untuk menjaga aplikasi tetap berjalan meskipun terjadi panic.
+
+Dengan pendekatan ini, aplikasi backend menjadi lebih stabil, mudah di-debug, dan ramah bagi klien maupun developer.
+
+Untuk mencoba code di atas bisa akses [3.3.4.4.ErrorHandlingRecoveryMiddleware.go](../../source-code/chapter3/3.3.4.4.ErrorHandlingRecoveryMiddleware.go)
