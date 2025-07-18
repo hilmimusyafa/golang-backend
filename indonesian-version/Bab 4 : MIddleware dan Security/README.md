@@ -261,7 +261,78 @@ Namun, dalam pengembangan API modern, terutama ketika _frontend_ (misalnya aplik
 
 _CORS middleware_ Gin hadir untuk menyelesaikan masalah ini dengan menambahkan _header HTTP_ yang diperlukan ke respons server, sehingga _browser_ klien mengizinkan permintaan lintas-asal.
 
+Kira kira bagaiamana CORS bisa bekerja secara sederhana? Ketika sebuah _browser_ membuat permintaan lintas-asal (misalnya, JavaScript di `app.example.com` mencoba mengakses API di `api.example.com`), _browser_ akan mengirimkan _header_ `Origin` yang menunjukkan dari mana permintaan itu berasal. Server kemudian harus merespons dengan _header_ `Access-Control-Allow-Origin` yang mengindikasikan apakah `Origin` tersebut diizinkan untuk mengakses sumber daya.
 
+Jika _Origin_ tidak diizinkan, _browser_ akan memblokir permintaan tersebut, bahkan jika server telah memprosesnya dan menghasilkan respons. 
+
+Untuk implementasi CORS Middleware, Gin tidak memiliki _middleware_ CORS bawaan langsung seperti _Logger_ atau _Recovery_ di paket intinya. Namun, ada _middleware_ komunitas yang sangat populer dan direkomendasikan untuk CORS: `github.com/gin-contrib/cors`. Ini adalah _middleware_ yang sangat fleksibel dan mudah digunakan.
+
+Tapi karena penting, jadi tetap akan di coba, dan untuk mulai pastikan melakukan Instalasi package `gin-contrib/cors` : 
+
+```bash
+$ go get github.com/gin-contrib/cors
+```
+
+Lalu setelah sudah install, bisa test dengan menjalankan kode di bawah :
+
+4.1.3-TryCORSMiddleware.go
+
+```go
+package main
+
+import (
+	"net/http"
+	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gin-contrib/cors" // Import the CORS middleware
+)
+
+func main() {
+	r := gin.Default()
+
+	// CORS Middleware Configuration
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"http://localhost:3000", "https://your-frontend-domain.com"} // Izinkan hanya domain ini
+	// config.AllowAllOrigins = true // Atau izinkan semua domain (TIDAK disarankan untuk produksi)
+	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE"}
+	config.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type", "Authorization"}
+	config.ExposeHeaders = []string{"Content-Length"} // Header yang boleh diekspos ke browser
+	config.AllowCredentials = true // Izinkan pengiriman cookies dan header otorisasi
+	config.MaxAge = 12 * time.Hour // Durasi hasil preflight request di-cache
+
+	r.Use(cors.New(config)) // Terapkan CORS middleware
+
+	// Endpoint API yang akan diakses dari frontend
+	r.GET("/api/data", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"message": "Data from API"})
+	})
+
+	r.POST("/api/submit", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"message": "Data submitted successfully"})
+	})
+
+	r.Run(":8080")
+}
+```
+
+Buat penjelasan Konfigurasi CORS di atas : 
+- `cors.DefaultConfig()`: Mengembalikan konfigurasi CORS _default_ yang bisa dimodifikasi.
+- `config.AllowOrigins`: Sangat penting untuk menentukan daftar domain yang diizinkan untuk mengakses API Anda. Menggunakan `AllowAllOrigins = true` harus dihindari di lingkungan produksi karena membuka API Anda untuk setiap domain, yang merupakan risiko keamanan.
+- `config.AllowMethods`: Metode HTTP (GET, POST, dll.) yang diizinkan dari domain yang diizinkan.
+- `config.AllowHeaders`: _Header_ kustom yang diizinkan untuk dikirim oleh klien. `Authorization` seringkali perlu ditambahkan jika Anda menggunakan _token_ autentikasi.
+- `config.ExposeHeaders`: _Header_ yang diizinkan untuk diekspos ke _browser_ klien.
+- `config.AllowCredentials`: Mengizinkan _browser_ untuk menyertakan _cookies_ atau _header_ otorisasi (`Authorization`) saat membuat permintaan lintas-asal. Ini penting untuk sesi berbasis _cookie_ atau _token_ otorisasi.
+- `config.MaxAge`: Berapa lama hasil dari permintaan _preflight_ (permintaan `OPTIONS` yang dikirim _browser_ sebelum _request_ yang sebenarnya untuk memeriksa kebijakan CORS) dapat di-_cache_ oleh _browser_.
+
+Dan untuk kapan sih penggunaan CORS Middleware? 
+
+- Ketika memiliki _frontend_ aplikasi web (misalnya SPA berbasis JavaScript) yang disajikan dari domain/port yang berbeda dengan _backend_ Gin.
+- Saat mengintegrasikan API dengan aplikasi pihak ketiga yang berjalan di domain berbeda.
+    
+Mengatur CORS dengan benar sangat penting untuk fungsionalitas API Anda sekaligus menjaga keamanan dasar terhadap permintaan lintas-asal yang tidak diinginkan.
+
+Untuk mencoba bisa akses [4.1.3-TryCORSMiddleware.go](../../source-code/chapter4/4.1.3-TryCORSMiddleware.go)
 ### 4.1.4 Rate Limiting
 
 ## 4.2 Custom Middlewares
