@@ -358,9 +358,9 @@ Banyak developer pemula meremehkan tahap ini. Akibatnya, di tengah jalan mereka 
 
 ### 1.5.1 Go Installation & Workspace
 
-Tentu saja, kita butuh compiler Go untuk menerjemahkan kode yang kita tulis agar dimengerti oleh mesin. Namun, yang lebih penting adalah memahami bagaimana Go mengelola dependensi proyek.
+Tentu saja, dibutuhkan compiler Go untuk menerjemahkan kode yang ditulis agar dimengerti oleh mesin. Namun, yang lebih penting adalah memahami bagaimana Go mengelola dependensi proyek.
 
-Dulu, Go sangat kaku dengan konsep `GOPATH` (semua proyek harus ada di satu folder khusus). Sekarang, kita menggunakan Go Modules. Ini memungkinkan membuat proyek di folder mana saja di komputer.
+Dulu, Go sangat kaku dengan konsep `GOPATH` (semua proyek harus ada di satu folder khusus). Sekarang, menggunakan Go Modules. Ini memungkinkan membuat proyek di folder mana saja di komputer.
 
 Langkah Instalasi :
 
@@ -458,7 +458,7 @@ Bayangkan dua orang koki. Koki A memasak di dapur yang berantakan, bahan bersera
 
 Siapa yang masakannya akan konsisten enak dan aman? Tentu Koki B.
 
-Subbab ini akan membahas bagaimana membangun "dapur profesional" sendiri, atau yang kita sebut Development Workflow.
+Subbab ini akan membahas bagaimana membangun "dapur profesional" sendiri, atau yang disebut Development Workflow.
 
 ### 1.6.1 Local Development Environment (Dapur Uji Coba)
 
@@ -510,7 +510,7 @@ Mengapa ini penting? Saat aplikasi sudah di-deploy ke server produksi, Anda tida
 
 Best Practice: Jangan gunakan fmt.Println untuk logging di produksi! Gunakan Structured Logging (Format JSON) agar mudah dibaca oleh mesin/software monitoring.
 
-Kita akan menggunakan package standar Go yang baru dan powerful: log/slog (sejak Go 1.21).
+Di sini akan menggunakan package standar Go yang baru dan powerful : log/slog (sejak Go 1.21).
 
 Level Logging :
 
