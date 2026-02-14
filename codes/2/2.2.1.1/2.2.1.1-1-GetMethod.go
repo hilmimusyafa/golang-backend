@@ -9,7 +9,7 @@ import (
 func main() {
 	r := gin.Default()
 
-	// 1. GET: Mengambil data
+	// 1. GET: Take data
 	r.GET("/books", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "Showing list of books",
