@@ -81,7 +81,7 @@ Kode bisa di akses di [1.1.3-1-BasicBackendServer.go](../../codes/1/1.1.3/1.1.3-
 Untuk menggunakan kode tersebut, jalankan dengan go di terminal.
 
 ```bash
-$ go run 1.1.3-1-BasicBackendServer.go
+go run 1.1.3-1-BasicBackendServer.go
 ```
 
 Lalu buka browser internet, kunjungi : http://localhost:8080/api/salam. Dan ini untuk breakdown Penjelasan Kode : 
@@ -307,7 +307,7 @@ Mengapa ini penting? Proyek backend yang matang tidak mungkin hanya terdiri dari
 
 Cara Kerja Sederhana :
 
-- Jalankan `$ go mod init nama-proyek` (Membuat "KTP" untuk proyek).
+- Jalankan `go mod init nama-proyek` (Membuat "KTP" untuk proyek).
 - Gunakan huruf kapital di awal nama fungsi/variabel (`func GetUser()`) agar bisa diakses dari package (folder) lain. Ini disebut sifat Exported (Public). Jika huruf kecil (`func getUser()`), ia hanya bisa dipakai di dalam package itu sendiri (Private).
 
 ### 1.4.6 Go Standard Library Tour
@@ -371,7 +371,7 @@ Langkah Instalasi :
 Verifikasi : Buka terminal/CMD, ketik perintah berikut:
 
 ```bash
-$ go version
+go version
 ```
 
 Output yang diharapkan : 
@@ -384,11 +384,11 @@ Setup Workspace Proyek, Setiap kali memulai proyek baru, biasakan melakukan inis
 
 ```bash
 # Buat folder proyek
-$ mkdir my-backend-app
-$ cd my-backend-app
+mkdir my-backend-app
+cd my-backend-app
 
 # Inisialisasi Go Modules
-$ go mod init github.com/username/my-backend-app
+go mod init github.com/username/my-backend-app
 ```
 
 File `go.mod` akan terbentuk. Ini adalah "KTP" dari proyek yang mencatat semua library yang digunakan nanti.
@@ -425,8 +425,8 @@ Jangan pernah menamai file `backend_final_v3_beneran_fix.go`. Git adalah mesin w
 Untuk awal memulai bisa jalankan perintah : 
 
 ```bash
-$ git config --global user.name "Name"
-$ git config --global user.email "email@domain.com"
+git config --global user.name "Name"
+git config --global user.email "email@domain.com"
 ```
 
 > Penting : `.gitignore` untuk Golang File `.gitignore` memberi tahu Git file mana yang **TIDAK BOLEH** di-upload (misalnya file rahasia atau file sampah hasil kompilasi).
@@ -469,7 +469,7 @@ Di lingkungan lokal, semua bisa dilakukan, bisa menghancurkan database, mematika
 - Cara Setup : Jalankan perintah ini di terminal : 
 
 ```bash
-$ go install github.com/air-verse/air@latest
+go install github.com/air-verse/air@latest
 ```
 
 Sekarang, alih-alih mengetik `go run main.go`, cukup ketik `air` di terminal root proyek. Setiap kali menekan Save (Ctrl+S), server akan restart otomatis dalam hitungan milidetik!

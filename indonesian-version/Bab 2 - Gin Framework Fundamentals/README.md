@@ -40,14 +40,14 @@ Sebelum mulai, pastikan Go sudah terinstal di komputer. Langkah pertama dalam se
 Buka terminal dan jalankan perintah berikut untuk membuat folder proyek dan inisialisasi `go.mod` :
 
 ```bash
-$ cd <folder>
-$ go mod init <folder>
+cd <folder>
+go mod init <folder>
 ```
 
 Setelah itu, unduh package Gin :
 
 ```bash
-$ go get -u github.com/gin-gonic/gin
+go get -u github.com/gin-gonic/gin
 ```
 
 Perintah ini akan mengunduh Gin dan dependensinya, serta mencatatnya di file `go.mod` dan `go.sum`.
@@ -106,7 +106,7 @@ func main() {
 Setelah kode disimpan, jalankan lewat terminal :
 
 ```bash
-$ go run 2.1.5-1-SimpleServer.go
+go run 2.1.5-1-SimpleServer.go
 ```
 
 Output di terminal akan terlihat seperti ini (menandakan server aktif) :
@@ -236,13 +236,13 @@ Penjelasan singkat bagian kode di atas seperti ini :
 Dari kode di atas bisa dijalankan, akses di `curl` atau API tester : 
 
 ```bash
-$ curl http://localhost:8080/books
+curl http://localhost:8080/books
 ```
 
 Atau lebih eksplisit dengan metode GET :
 
 ```bash
-$ curl -X GET http://localhost:8080/books
+curl -X GET http://localhost:8080/books
 ```
 
 Maka server akan mengembalikan response :
@@ -281,7 +281,7 @@ Dari contoh di atas, dapat disimpulkan bahwa ketika client mengakses endpoint `/
 Namun, jika di coba lagi dengan sembarang routing, misal `/unkown` :
 
 ```bash
-$ curl http://localhost:8080/unknown
+curl http://localhost:8080/unknown
 ```
 
 Maka response yang di dapat pada API tester :
@@ -405,7 +405,7 @@ Dengan status HTTP :
 Namun, jika body JSON tidak valid atau tidak dikirim :
 
 ```bash
-$ curl -X POST http://localhost:8080/books
+curl -X POST http://localhost:8080/books
 ```
 
 Maka response yang didapat :
@@ -537,7 +537,7 @@ Penjelasan singkat bagian kode di atas seperti ini :
 Kita coba jalankan. Untuk menguji PUT, kirim body JSON lengkap karena PUT biasanya mengganti seluruh data.
 
 ```bash
-$ curl -X PUT http://localhost:8080/books/1 \
+curl -X PUT http://localhost:8080/books/1 \
   -H "Content-Type: application/json" \
   -d '{"title":"New Clean Code","author":"Robert Martin"}'
 ```
@@ -564,7 +564,7 @@ Dengan status HTTP :
 Namun, jika body JSON tidak valid :
 
 ```bash
-$ curl -X PUT http://localhost:8080/books/1
+curl -X PUT http://localhost:8080/books/1
 ```
 
 Maka response yang didapat :
@@ -584,7 +584,7 @@ Dengan status HTTP :
 Kita juga coba dengan ID yang tidak ada : 
 
 ```bash
-$ curl -X PUT http://localhost:8080/books/99 \
+curl -X PUT http://localhost:8080/books/99 \
   -H "Content-Type: application/json" \
   -d '{"title":"Test","author":"Test"}'
 ```
@@ -734,7 +734,7 @@ Penjelasan singkat bagian kode di atas seperti ini :
 Karena PATCH bersifat parsial, kita cukup mengirim field yang ingin diubah. Contoh hanya mengubah title :
 
 ```bash
-$ curl -X PATCH http://localhost:8080/books/1 \
+curl -X PATCH http://localhost:8080/books/1 \
   -H "Content-Type: application/json" \
   -d '{"title":"Clean Code 2nd Edition"}'
 ```
@@ -761,7 +761,7 @@ Dengan status HTTP :
 Namun, jika body JSON tidak valid:
 
 ```bash
-$ curl -X PATCH http://localhost:8080/books/1
+curl -X PATCH http://localhost:8080/books/1
 ```
 
 Maka response yang didapat :
@@ -780,7 +780,7 @@ Dengan status HTTP :
 Coba juga dengan 
 
 ```bash
-$ curl -X PATCH http://localhost:8080/books/67 \
+curl -X PATCH http://localhost:8080/books/67 \
   -H "Content-Type: application/json" \
   -d '{"title":"Clean Code 2nd Edition"}'
 ```
@@ -904,7 +904,7 @@ Penjelasan dari kode di atas :
 Uji test dengan `curl` atau API Tester : 
 
 ```bash
-$ curl -X DELETE http://localhost:8080/books/1
+curl -X DELETE http://localhost:8080/books/1
 ```
 
 Jika berhasil maka akan mengeluarkan informasi :
@@ -1138,7 +1138,7 @@ Penjelasan singkat kode :
 Sekarang coba codenya, dan uji coba dengan `curl` API tester :
 
 ```bash
-$ curl -X POST http://localhost:8080/register \
+curl -X POST http://localhost:8080/register \
 -H "Content-Type: application/json" \
 -d '{
 	"username": "march",
@@ -1161,7 +1161,7 @@ Maka response jika berhasil :
 Namun misal dengan contoh email salah (atau tidak sesuai format) :
 
 ```bash
-$ curl -X POST http://localhost:8080/register \
+curl -X POST http://localhost:8080/register \
 -H "Content-Type: application/json" \
 -d '{
 	"username": "hilmi",
@@ -1275,7 +1275,7 @@ Penjelasan singkat kode :
 Oke, sekarang saatnya mencoba, mulai dari single upload :
 
 ```bash
-$ curl -X POST http://localhost:8080/upload/single \
+curl -X POST http://localhost:8080/upload/single \
   -F "avatar=@/path/to/your/image.jpg"
 ```
 
@@ -1292,7 +1292,7 @@ Jika berhasil, maka akan keluar response :
 Namun jika kita tidak menggisi filenya, maka response pun akan memberi kejelasan error sesuai yang ada di code :
 
 ```bash
-$ curl -X POST http://localhost:8080/upload/single
+curl -X POST http://localhost:8080/upload/single
 ```
 
 Dan response gagal nya :
@@ -1306,7 +1306,7 @@ Dan response gagal nya :
 Juga, jika memaksa dengan tag yang salah :
 
 ```bash
-$ curl -X POST http://localhost:8080/upload/single \
+curl -X POST http://localhost:8080/upload/single \
   -F "photo=@image.jpg"
 ```
 
@@ -1315,7 +1315,7 @@ Maka akan mendapat error juga, karena tidak match tagnya.
 Kita coba untuk yang multi uploads :
 
 ```bash
-$ curl -X POST http://localhost:8080/upload/multiple \
+curl -X POST http://localhost:8080/upload/multiple \
   -F "photos=@/path/to/photo1.jpg" \
   -F "photos=@/path/to/photo2.png"
 ```
@@ -1331,7 +1331,7 @@ Dan jika proses berhasil maka mendapat informasi :
 Namun hal ini akan sama jika kita upload cuman satu file : 
 
 ```bash
-$ curl -X POST http://localhost:8080/upload/multiple \
+curl -X POST http://localhost:8080/upload/multiple \
   -F "photos=@/path/to/single.jpg"
 ```
 
@@ -1346,7 +1346,7 @@ Hasil :
 Misal kita coba lagi, kalau filenya itu ga ada :
 
 ```bash
-$ curl -X POST http://localhost:8080/upload/multiple \
+curl -X POST http://localhost:8080/upload/multiple \
   -F "photos=@/path/ke/file/tidakada.jpg"
 ```
 
@@ -1359,7 +1359,7 @@ curl: (26) Failed to open/read local file from /path/ke/file/tidakada.jpg
 Kita coba contoh dengan file yang berbeda format : 
 
 ```bash
-$ curl -X POST http://localhost:8080/upload/single \
+curl -X POST http://localhost:8080/upload/single \
   -F "avatar=@/path/to/document.pdf"
 ```
 
@@ -1376,7 +1376,7 @@ Maka response :
 Kita uji juga upload file ukuran besar (Melebihi 8MB) :
 
 ```bash
-$ curl -X POST http://localhost:8080/upload/single \
+curl -X POST http://localhost:8080/upload/single \
   -F "avatar=@/path/to/largefile.mp4"
 ```
 
@@ -1695,7 +1695,7 @@ Penjelasan singkat :
 Untuk mencobanya, kita akan mulai dengan tanpa authorization header (akan gagal) :
 
 ```bash
-$ curl http://localhost:8080/protected
+curl http://localhost:8080/protected
 ```
 
 Maka response :
@@ -1709,7 +1709,7 @@ Maka response :
 Kita coba juga dengan authorization header yang benar : 
 
 ```bash
-$ curl -H "Authorization: Bearer secret123" http://localhost:8080/protected
+curl -H "Authorization: Bearer secret123" http://localhost:8080/protected
 ```
 
 Dan akan mendapat response seharusnya :
@@ -1891,7 +1891,7 @@ Sekarang mari kita test endpoint-endpoint tersebut.
 Test endpoint sukses dengan data :
 
 ```bash
-$ curl http://localhost:8080/users/1
+curl http://localhost:8080/users/1
 ```
 
 Response :
@@ -1911,7 +1911,7 @@ Response :
 Test endpoint error sederhana :
 
 ```bash
-$ curl http://localhost:8080/users/1/posts
+curl http://localhost:8080/users/1/posts
 ```
 
 Response :
@@ -1926,7 +1926,7 @@ Response :
 Test endpoint error dengan detail :
 
 ```bash
-$ curl -X POST http://localhost:8080/register
+curl -X POST http://localhost:8080/register
 ```
 
 Response :
@@ -1946,7 +1946,7 @@ Response :
 Test endpoint sukses tanpa data :
 
 ```bash
-$ curl -X DELETE http://localhost:8080/users/1
+curl -X DELETE http://localhost:8080/users/1
 ```
 
 Response :
@@ -2000,7 +2000,7 @@ Middleware memungkinkan kita memisahkan logika lintas-kepentingan (cross-cutting
 
 - `Logging` : Mencatat setiap request yang masuk.
 - `Authentication` : Memastikan user sudah login.
-- `CORS` : Mengizinkan akses dari domain lain.
+- `Cross-Origin Resource Sharing (CORS)` : Mengizinkan akses dari domain lain.
 - `Crash Recovery` : Mencegah server mati total jika ada error fatal.
 
 ### 2.5.3 Cara Kerja Middleware (The Onion Model)
@@ -2125,7 +2125,7 @@ Penjelasan singkat kode :
 Mari kita test endpoint yang normal :
 
 ```bash
-$ curl http://localhost:8080/users
+curl http://localhost:8080/users
 ```
 
 Output di terminal server :
@@ -2147,7 +2147,7 @@ Response client :
 Sekarang test endpoint yang panic :
 
 ```bash
-$ curl http://localhost:8080/panic
+curl http://localhost:8080/panic
 ```
 
 Output di terminal server :
@@ -2314,7 +2314,7 @@ Penjelasan singkat kode :
 Test akses endpoint publik (tanpa autentikasi) :
 
 ```bash
-$ curl http://localhost:8080/public
+curl http://localhost:8080/public
 ```
 
 Response :
@@ -2328,7 +2328,7 @@ Response :
 Test akses profile tanpa token :
 
 ```bash
-$ curl http://localhost:8080/profile
+curl http://localhost:8080/profile
 ```
 
 Response :
@@ -2342,7 +2342,7 @@ Response :
 Test akses profile dengan token yang salah :
 
 ```bash
-$ curl -H "Authorization: Bearer wrong-token" http://localhost:8080/profile
+curl -H "Authorization: Bearer wrong-token" http://localhost:8080/profile
 ```
 
 Response :
@@ -2356,7 +2356,7 @@ Response :
 Test akses profile dengan token yang benar :
 
 ```bash
-$ curl -H "Authorization: Bearer secret-token-123" http://localhost:8080/profile
+curl -H "Authorization: Bearer secret-token-123" http://localhost:8080/profile
 ```
 
 Response :
@@ -2371,7 +2371,7 @@ Response :
 Test akses admin dashboard dengan token valid :
 
 ```bash
-$ curl -H "Authorization: Bearer secret-token-123" http://localhost:8080/admin/dashboard
+curl -H "Authorization: Bearer secret-token-123" http://localhost:8080/admin/dashboard
 ```
 
 Response :
@@ -2389,7 +2389,7 @@ Response :
 Test delete user dengan autentikasi :
 
 ```bash
-$ curl -X DELETE -H "Authorization: Bearer secret-token-123" http://localhost:8080/users/5
+curl -X DELETE -H "Authorization: Bearer secret-token-123" http://localhost:8080/users/5
 ```
 
 Response :
@@ -2555,7 +2555,7 @@ Penjelasan singkat kode :
 Test endpoint root :
 
 ```bash
-$ curl http://localhost:8080/
+curl http://localhost:8080/
 ```
 
 Response :
@@ -2569,7 +2569,7 @@ Response :
 Test endpoint v1 products (publik, ada rate limit) :
 
 ```bash
-$ curl http://localhost:8080/api/v1/products
+curl http://localhost:8080/api/v1/products
 ```
 
 Response (perhatikan header `X-API-Version`) :
@@ -2591,7 +2591,7 @@ X-API-Version: 1.0
 Test endpoint v1 orders tanpa autentikasi :
 
 ```bash
-$ curl http://localhost:8080/api/v1/orders
+curl http://localhost:8080/api/v1/orders
 ```
 
 Response :
@@ -2605,7 +2605,7 @@ Response :
 Test endpoint v1 orders dengan autentikasi :
 
 ```bash
-$ curl -H "Authorization: Bearer valid-token" http://localhost:8080/api/v1/orders
+curl -H "Authorization: Bearer valid-token" http://localhost:8080/api/v1/orders
 ```
 
 Response :
@@ -2620,7 +2620,7 @@ Response :
 Test endpoint v2 products :
 
 ```bash
-$ curl http://localhost:8080/api/v2/products
+curl http://localhost:8080/api/v2/products
 ```
 
 Response :
@@ -2645,7 +2645,7 @@ X-API-Version: 2.0
 Test endpoint admin tanpa autentikasi :
 
 ```bash
-$ curl http://localhost:8080/admin/users
+curl http://localhost:8080/admin/users
 ```
 
 Response :
@@ -2659,7 +2659,7 @@ Response :
 Test endpoint admin dengan autentikasi :
 
 ```bash
-$ curl -H "Authorization: Bearer valid-token" http://localhost:8080/admin/users
+curl -H "Authorization: Bearer valid-token" http://localhost:8080/admin/users
 ```
 
 Response :
@@ -2706,6 +2706,8 @@ Output di terminal :
 [GIN] 2024/01/15 - 10:30:45 | 200 |     1.234ms |   192.168.1.1 | GET      "/api/users"
 ```
 
+Untuk implementasi sederhananya, sama seperti di Phase Logger sebelumnya.
+
 #### 2.5.5.2 Recovery Middleware
 
 Recovery middleware menangkap panic dan mencegah server crash.
@@ -2735,48 +2737,217 @@ authorized := r.Group("/admin", gin.BasicAuth(gin.Accounts{
 Test :
 
 ```bash
-$ curl -u admin:password123 http://localhost:8080/admin/dashboard
+curl -u admin:password123 http://localhost:8080/admin/dashboard
 ```
+
+Untuk implementasi sederhananya, sama seperti di Phase Recovery sebelumnya.
 
 #### 2.5.5.4 CORS Middleware
 
-CORS (Cross-Origin Resource Sharing) penting untuk API yang diakses dari frontend berbeda domain.
+CORS (Cross-Origin Resource Sharing) adalah mekanisme keamanan browser yang mengontrol akses resource dari domain yang berbeda. Middleware CORS sangat penting ketika API backend diakses dari frontend yang berjalan di domain atau port yang berbeda.
 
-Instalasi package :
+##### Mengapa CORS Penting?
+
+Secara default, browser menerapkan Same-Origin Policy untuk keamanan. Artinya, jika frontend Anda berjalan di `https://myapp.com:3000` dan API backend di `http://localhost:8080`, browser akan memblokir request karena berbeda origin (protokol, domain, atau port berbeda).
+
+CORS (Cross-Origin Resource Sharing) adalah mekanisme yang mengizinkan server memberitahu browser : "Request dari origin X boleh mengakses resource saya". Tanpa konfigurasi CORS yang benar, API Anda tidak bisa diakses oleh frontend yang berbeda domain.
+
+Instalasi Package CORS :
 
 ```bash
-$ go get github.com/gin-contrib/cors
+go get github.com/gin-contrib/cors
 ```
 
-Implementasi :
+##### Implementasi CORS Sederhana
+
+Untuk development atau API publik yang boleh diakses dari mana saja :
 
 ```go
 import "github.com/gin-contrib/cors"
 
 r := gin.Default()
 
-// CORS middleware sederhana
+// CORS dengan konfigurasi default
+// Mengizinkan semua origin (*), semua method, dan semua header
 r.Use(cors.Default())
+```
 
-// Atau dengan konfigurasi custom
+##### Implementasi CORS Production-Ready
+
+Untuk production, sebaiknya gunakan konfigurasi yang lebih ketat :
+
+2.5.5.4-1-CORSMiddleware.go
+
+```go
+package main
+
+import (
+	"net/http"
+	"time"
+
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
+)
+
+func main() {
+	r := gin.Default()
+
+	// Konfigurasi CORS untuk production
+	r.Use(cors.New(cors.Config{
+		// Domain yang diizinkan mengakses API
+		AllowOrigins: []string{
+			"https://myapp.com",
+			"https://www.myapp.com",
+			"https://admin.myapp.com",
+		},
+
+		// HTTP methods yang diizinkan
+		AllowMethods: []string{
+			"GET",
+			"POST",
+			"PUT",
+			"PATCH",
+			"DELETE",
+			"OPTIONS",
+		},
+
+		// Headers yang diizinkan dari client
+		AllowHeaders: []string{
+			"Origin",
+			"Content-Type",
+			"Accept",
+			"Authorization",
+			"X-Request-ID",
+		},
+
+		// Headers yang boleh diakses oleh client dari response
+		ExposeHeaders: []string{
+			"Content-Length",
+			"X-Request-ID",
+		},
+
+		// Izinkan credentials (cookies, authorization headers)
+		AllowCredentials: true,
+
+		// Berapa lama browser boleh cache preflight request (OPTIONS)
+		MaxAge: 12 * time.Hour,
+	}))
+
+	// Routes
+	r.GET("/api/users", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Users retrieved successfully",
+			"data":    []string{"User 1", "User 2"},
+		})
+	})
+
+	r.POST("/api/users", func(c *gin.Context) {
+		c.JSON(http.StatusCreated, gin.H{
+			"message": "User created successfully",
+		})
+	})
+
+	r.Run(":8080")
+}
+```
+
+##### Konfigurasi CORS untuk Development
+
+Untuk development, Anda mungkin ingin lebih permisif :
+
+```go
 r.Use(cors.New(cors.Config{
-	AllowOrigins:     []string{"https://example.com", "https://app.example.com"},
-	AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
-	AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
-	ExposeHeaders:    []string{"Content-Length"},
+	// Izinkan semua origin di development
+	AllowOrigins: []string{"*"},
+	
+	// Atau izinkan localhost dengan port tertentu
+	AllowOrigins: []string{
+		"http://localhost:3000",
+		"http://localhost:5173", // Vite default
+		"http://127.0.0.1:3000",
+	},
+
+	AllowMethods:     []string{"*"},
+	AllowHeaders:     []string{"*"},
 	AllowCredentials: true,
 	MaxAge:           12 * time.Hour,
 }))
 ```
 
+##### CORS dengan Custom Function
+
+Untuk kebutuhan yang lebih kompleks, gunakan `AllowOriginFunc` :
+
+```go
+r.Use(cors.New(cors.Config{
+	AllowOriginFunc: func(origin string) bool {
+		// Izinkan semua subdomain dari myapp.com
+		return strings.HasSuffix(origin, ".myapp.com") ||
+			origin == "https://myapp.com"
+	},
+	AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
+	AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+	AllowCredentials: true,
+	MaxAge:           12 * time.Hour,
+}))
+```
+
+##### Penjelasan Field Config CORS
+
+| Field                | Fungsi                                                                                   | Contoh                                           |
+| -------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| `AllowOrigins`       | Domain yang diizinkan mengakses API                                                      | `[]string{"https://myapp.com"}`                  |
+| `AllowMethods`       | HTTP methods yang diizinkan                                                              | `[]string{"GET", "POST", "PUT"}`                 |
+| `AllowHeaders`       | Headers yang boleh dikirim client                                                        | `[]string{"Authorization", "Content-Type"}`      |
+| `ExposeHeaders`      | Headers response yang boleh dibaca client                                                | `[]string{"X-Total-Count"}`                      |
+| `AllowCredentials`   | Izinkan cookies/auth headers                                                             | `true`                                           |
+| `MaxAge`             | Durasi cache preflight request                                                           | `12 * time.Hour`                                 |
+| `AllowOriginFunc`    | Function custom untuk validasi origin                                                    | `func(origin string) bool { return true }`       |
+| `AllowWildcard`      | Izinkan wildcard dalam AllowOrigins                                                      | `true`                                           |
+| `AllowBrowserExtensions` | Izinkan request dari browser extension                                               | `true`                                           |
+| `AllowWebSockets`    | Izinkan WebSocket connections                                                            | `true`                                           |
+
+##### Testing CORS
+
+Test dengan curl :
+
+```bash
+# Test preflight request (OPTIONS)
+curl -X OPTIONS http://localhost:8080/api/users \
+  -H "Origin: https://myapp.com" \
+  -H "Access-Control-Request-Method: POST" \
+  -H "Access-Control-Request-Headers: Content-Type" \
+  -v
+```
+
+Response headers yang diharapkan :
+
+```
+Access-Control-Allow-Origin: https://myapp.com
+Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS
+Access-Control-Allow-Headers: Origin, Content-Type, Accept, Authorization
+Access-Control-Allow-Credentials: true
+Access-Control-Max-Age: 43200
+```
+
+Test actual request :
+
+```bash
+curl http://localhost:8080/api/users \
+  -H "Origin: https://myapp.com" \
+  -v
+```
+
+Kode dapat diakses di [2.5.5.4-1-CORSMiddleware.go](../../codes/2/2.5.5.4/2.5.5.4-1-CORSMiddleware.go)
+
 ### 2.5.6 Contoh Middleware Production-Ready
 
-Berikut adalah contoh middleware yang siap digunakan untuk production :
+Berikut adalah contoh middleware yang siap digunakan untuk production, walau secara pengelolaan file belum tapi untuk code sudah :
 
 2.5.6-1-ProductionMiddleware.go
 
 ```go
-package middleware
+package main
 
 import (
 	"fmt"
@@ -2907,30 +3078,18 @@ func TimeoutMiddleware(timeout time.Duration) gin.HandlerFunc {
 		}
 	}
 }
-```
-
-Penggunaan di `main.go` :
-
-```go
-package main
-
-import (
-	"time"
-	"github.com/gin-gonic/gin"
-	"yourproject/middleware"
-)
 
 func main() {
 	r := gin.New()
 
 	// Gunakan middleware production-ready
-	r.Use(middleware.RequestIDMiddleware())
-	r.Use(middleware.LoggerMiddleware())
-	r.Use(middleware.ErrorHandlerMiddleware())
-	r.Use(middleware.RateLimitMiddleware(100, time.Minute)) // 100 req/menit per IP
+	r.Use(RequestIDMiddleware())
+	r.Use(LoggerMiddleware())
+	r.Use(ErrorHandlerMiddleware())
+	r.Use(RateLimitMiddleware(10, time.Minute)) // 10 req/menit per IP
 
 	// Routes
-	r.GET("/api/users", middleware.TimeoutMiddleware(5*time.Second), func(c *gin.Context) {
+	r.GET("/api/users", TimeoutMiddleware(5*time.Second), func(c *gin.Context) {
 		// Simulasi proses lambat
 		time.Sleep(2 * time.Second)
 		
@@ -2942,6 +3101,100 @@ func main() {
 	r.Run(":8080")
 }
 ```
+
+Penjelasan singkat kode :
+
+- `RequestIDMiddleware` : Memberikan unique ID ke setiap request untuk tracking
+- `LoggerMiddleware` : Mencatat semua request dengan format structured
+- `ErrorHandlerMiddleware` : Menangani error secara terpusat
+- `RateLimitMiddleware` : Membatasi jumlah request per IP dalam periode waktu tertentu
+- `TimeoutMiddleware` : Memberikan timeout pada handler untuk mencegah request yang terlalu lama
+
+Test request normal :
+
+```bash
+curl http://localhost:8080/api/users
+```
+
+Response :
+
+```json
+{
+  "message": "Success"
+}
+```
+
+Headers response :
+
+```
+X-Request-ID: 550e8400-e29b-41d4-a716-446655440000
+```
+
+Output di server log :
+
+```
+[550e8400-e29b-41d4-a716-446655440000] [2024-01-15 10:30:45] GET /api/users - Status: 200 - Duration: 2.001s
+```
+
+Test rate limiting (kirim request berulang kali dengan cepat) :
+
+```bash
+# Script untuk test rate limit
+for i in {1..105}; do
+  curl http://localhost:8080/api/users
+  echo "Request $i"
+done
+```
+
+Setelah request ke-10, akan mendapat response :
+
+```json
+{
+  "error": "Rate limit exceeded. Please try again later."
+}
+```
+
+Test dengan verbose untuk melihat headers :
+
+```bash
+curl -v http://localhost:8080/api/users
+```
+
+Output akan menampilkan header `X-Request-ID` :
+
+```
+< HTTP/1.1 200 OK
+< Content-Type: application/json; charset=utf-8
+< X-Request-ID: 550e8400-e29b-41d4-a716-446655440000
+< Date: Mon, 15 Jan 2024 03:30:45 GMT
+< Content-Length: 23
+```
+
+Test request yang timeout (ubah sleep di handler menjadi lebih dari 5 detik untuk testing) :
+
+```bash
+curl http://localhost:8080/api/users
+```
+
+Jika handler sleep lebih dari 5 detik, akan mendapat response :
+
+```json
+{
+  "error": "Request timeout"
+}
+```
+
+Test dengan multiple concurrent requests :
+
+```bash
+# Test concurrent requests
+for i in {1..10}; do
+  curl http://localhost:8080/api/users &
+done
+wait
+```
+
+Ini akan mengirim 10 request secara bersamaan dan setiap request akan memiliki unique `X-Request-ID`.
 
 Dengan middleware yang terstruktur seperti ini, aplikasi akan memiliki :
 
@@ -2965,15 +3218,1052 @@ Dalam Gin, `*gin.Context` adalah objek paling vital. Ia dibuat setiap kali ada r
 
 ### 2.6.2 Gin Context Deep Dive
 
-Apa sebenarnya isi dari *gin.Context?
-Secara teknis, struct ini adalah jembatan antara:
+Apa sebenarnya isi dari `*gin.Context`? Secara teknis, struct ini adalah jembatan antara :
 
-    Request Info: Header, Body, Query Params (c.Request).
+- **Request Info** : Header, Body, Query Params (`c.Request`).
+- **Response Writer** : Status code, Body response (`c.Writer`).
+- **Metadata/Storage** : Penyimpanan data sementara antar-middleware (`c.Keys`).
+- **Flow Control** : Mengatur kapan harus lanjut (`Next`) atau berhenti (`Abort`).
+- **Standard Go Context** : Ia mengimplementasikan interface `context.Context` standar Go, sehingga bisa digunakan untuk mengatur timeout dan deadline.
 
-    Response Writer: Status code, Body response (c.Writer).
+### 2.6.3 Fungsi-Fungsi Penting di Context
 
-    Metadata/Storage: Penyimpanan data sementara antar-middleware (c.Keys).
+Mari kita eksplorasi fungsi-fungsi penting yang tersedia di `*gin.Context` :
 
-    Flow Control: Mengatur kapan harus lanjut (Next) atau berhenti (Abort).
+#### 2.6.3.1 Mengambil Data Request
 
-    Standard Go Context: Ia mengimplementasikan interface context.Context standar Go, sehingga bisa digunakan untuk mengatur timeout dan deadline.
+**1. Query Parameters**
+
+Query parameter adalah data yang dikirim melalui URL setelah tanda `?`. Contoh : `/search?q=golang&page=1`
+
+```go
+// Mengambil query param
+q := c.Query("q")           // Mengembalikan string kosong jika tidak ada
+page := c.DefaultQuery("page", "1") // Mengembalikan default value jika tidak ada
+
+// Mengambil dengan validasi exists
+q, exists := c.GetQuery("q")
+if !exists {
+	c.JSON(400, gin.H{"error": "Query param 'q' is required"})
+	return
+}
+```
+
+**2. URL Parameters (Route Parameters)**
+
+URL parameter adalah bagian dari path yang dinamis. Contoh : `/users/:id`
+
+```go
+// Mengambil route param
+userID := c.Param("id")
+
+// Konversi ke integer
+id, err := strconv.Atoi(userID)
+if err != nil {
+	c.JSON(400, gin.H{"error": "Invalid user ID"})
+	return
+}
+```
+
+**3. Request Body (JSON/Form)**
+
+```go
+// Untuk JSON
+var input struct {
+	Name  string `json:"name" binding:"required"`
+	Email string `json:"email" binding:"required,email"`
+}
+
+if err := c.ShouldBindJSON(&input); err != nil {
+	c.JSON(400, gin.H{"error": err.Error()})
+	return
+}
+
+// Untuk Form Data
+var form struct {
+	Username string `form:"username" binding:"required"`
+	Password string `form:"password" binding:"required"`
+}
+
+if err := c.ShouldBind(&form); err != nil {
+	c.JSON(400, gin.H{"error": err.Error()})
+	return
+}
+```
+
+**4. Headers**
+
+```go
+// Mengambil header
+authHeader := c.GetHeader("Authorization")
+userAgent := c.GetHeader("User-Agent")
+
+// Mengambil dengan default value
+contentType := c.Request.Header.Get("Content-Type")
+```
+
+**5. Client IP**
+
+```go
+// Mengambil IP address client
+clientIP := c.ClientIP()
+```
+
+#### 2.6.3.2 Mengirim Response
+
+**1. JSON Response**
+
+```go
+c.JSON(http.StatusOK, gin.H{
+	"message": "Success",
+	"data": data,
+})
+```
+
+**2. String Response**
+
+```go
+c.String(http.StatusOK, "Hello, %s!", name)
+```
+
+**3. HTML Response**
+
+```go
+c.HTML(http.StatusOK, "index.html", gin.H{
+	"title": "Home Page",
+})
+```
+
+**4. File Response**
+
+```go
+// Mengirim file untuk didownload
+c.File("/path/to/file.pdf")
+
+// Atau dengan nama file custom
+c.FileAttachment("/path/to/file.pdf", "custom-name.pdf")
+```
+
+**5. Redirect**
+
+```go
+// Redirect ke URL lain
+c.Redirect(http.StatusMovedPermanently, "https://example.com")
+```
+
+#### 2.6.3.3 Menyimpan dan Mengambil Data di Context
+
+Context memiliki internal map (`c.Keys`) yang bisa digunakan untuk menyimpan data sementara selama request lifecycle.
+
+```go
+// Menyimpan data (biasanya di middleware)
+c.Set("user_id", 123)
+c.Set("username", "hilmi")
+c.Set("is_admin", true)
+
+// Mengambil data (di handler atau middleware berikutnya)
+userID, exists := c.Get("user_id")
+if exists {
+	id := userID.(int) // Type assertion
+	// Gunakan id
+}
+
+// Atau dengan helper khusus untuk tipe data tertentu
+userID := c.GetInt("user_id")
+username := c.GetString("username")
+isAdmin := c.GetBool("is_admin")
+```
+
+#### 2.6.3.4 Flow Control
+
+```go
+// Melanjutkan ke middleware/handler berikutnya
+c.Next()
+
+// Menghentikan eksekusi (tidak melanjutkan ke middleware/handler berikutnya)
+c.Abort()
+
+// Abort dengan status code tertentu
+c.AbortWithStatus(http.StatusUnauthorized)
+
+// Abort dengan JSON response
+c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
+	"error": "Access denied",
+})
+```
+
+### 2.6.4 Contoh Implementasi Lengkap
+
+Mari kita buat contoh yang menggunakan berbagai fitur Context :
+
+2.6.4-1-ContextExample.go
+
+```go
+package main
+
+import (
+	"fmt"
+	"net/http"
+	"strconv"
+	"time"
+
+	"github.com/gin-gonic/gin"
+)
+
+// Middleware untuk extract user info dari token
+func AuthMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		token := c.GetHeader("Authorization")
+
+		if token == "" {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+				"error": "Authorization header required",
+			})
+			return
+		}
+
+		// Simulasi validasi token dan extract user info
+		if token == "Bearer valid-token" {
+			// Simpan user info di context
+			c.Set("user_id", 1)
+			c.Set("username", "hilmi")
+			c.Set("email", "hilmi@mail.com")
+			c.Set("is_admin", true)
+		} else {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+				"error": "Invalid token",
+			})
+			return
+		}
+
+		c.Next()
+	}
+}
+
+// Middleware untuk logging
+func LoggingMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		startTime := time.Now()
+		path := c.Request.URL.Path
+		method := c.Request.Method
+		clientIP := c.ClientIP()
+
+		c.Next()
+
+		duration := time.Since(startTime)
+		statusCode := c.Writer.Status()
+
+		fmt.Printf("[%s] %s %s - IP: %s - Status: %d - Duration: %v\n",
+			time.Now().Format("2006-01-02 15:04:05"),
+			method,
+			path,
+			clientIP,
+			statusCode,
+			duration,
+		)
+	}
+}
+
+// Struct untuk input
+type CreatePostInput struct {
+	Title   string `json:"title" binding:"required,min=3"`
+	Content string `json:"content" binding:"required"`
+}
+
+// Struct untuk user
+type User struct {
+	ID       int    `json:"id"`
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	IsAdmin  bool   `json:"is_admin"`
+}
+
+func main() {
+	r := gin.New()
+
+	// Global middleware
+	r.Use(LoggingMiddleware())
+
+	// Public routes
+	r.GET("/", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Welcome to API",
+			"version": "1.0",
+		})
+	})
+
+	// Search endpoint dengan query params
+	r.GET("/search", func(c *gin.Context) {
+		// Ambil query params
+		query := c.Query("q")
+		page := c.DefaultQuery("page", "1")
+		limit := c.DefaultQuery("limit", "10")
+
+		// Validasi query
+		if query == "" {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": "Query parameter 'q' is required",
+			})
+			return
+		}
+
+		// Convert page dan limit ke integer
+		pageNum, _ := strconv.Atoi(page)
+		limitNum, _ := strconv.Atoi(limit)
+
+		c.JSON(http.StatusOK, gin.H{
+			"query":   query,
+			"page":    pageNum,
+			"limit":   limitNum,
+			"results": []string{"Result 1", "Result 2", "Result 3"},
+		})
+	})
+
+	// Protected routes
+	protected := r.Group("/api")
+	protected.Use(AuthMiddleware())
+	{
+		// Get user profile
+		protected.GET("/profile", func(c *gin.Context) {
+			// Ambil data dari context yang disimpan oleh middleware
+			user := User{
+				ID:       c.GetInt("user_id"),
+				Username: c.GetString("username"),
+				Email:    c.GetString("email"),
+				IsAdmin:  c.GetBool("is_admin"),
+			}
+
+			c.JSON(http.StatusOK, gin.H{
+				"message": "Profile retrieved successfully",
+				"user":    user,
+			})
+		})
+
+		// Get user by ID (route param)
+		protected.GET("/users/:id", func(c *gin.Context) {
+			// Ambil route param
+			userID := c.Param("id")
+
+			// Convert ke integer
+			id, err := strconv.Atoi(userID)
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"error": "Invalid user ID",
+				})
+				return
+			}
+
+			// Simulasi get user dari database
+			c.JSON(http.StatusOK, gin.H{
+				"message": "User found",
+				"user": gin.H{
+					"id":   id,
+					"name": fmt.Sprintf("User %d", id),
+				},
+			})
+		})
+
+		// Create post
+		protected.POST("/posts", func(c *gin.Context) {
+			var input CreatePostInput
+
+			// Bind dan validasi JSON
+			if err := c.ShouldBindJSON(&input); err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"error": "Validation failed",
+					"details": err.Error(),
+				})
+				return
+			}
+
+			// Ambil user info dari context
+			authorID := c.GetInt("user_id")
+			authorName := c.GetString("username")
+
+			c.JSON(http.StatusCreated, gin.H{
+				"message": "Post created successfully",
+				"post": gin.H{
+					"title":       input.Title,
+					"content":     input.Content,
+					"author_id":   authorID,
+					"author_name": authorName,
+				},
+			})
+		})
+
+		// Admin only endpoint
+		protected.DELETE("/users/:id", func(c *gin.Context) {
+			// Cek apakah user adalah admin
+			if !c.GetBool("is_admin") {
+				c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
+					"error": "Admin access required",
+				})
+				return
+			}
+
+			userID := c.Param("id")
+
+			c.JSON(http.StatusOK, gin.H{
+				"message": "User deleted successfully",
+				"user_id": userID,
+			})
+		})
+	}
+
+	r.Run(":8080")
+}
+```
+
+Penjelasan singkat kode :
+
+- `AuthMiddleware` : Menyimpan user info di context menggunakan `c.Set()`
+- `LoggingMiddleware` : Mencatat request info menggunakan data dari context
+- Handler mengambil data dari context menggunakan `c.Get()`, `c.GetInt()`, `c.GetString()`, dll
+- Validasi admin menggunakan data yang disimpan di context
+- Query params, route params, dan JSON binding digunakan secara bersamaan
+
+Test endpoint public :
+
+```bash
+curl http://localhost:8080/
+```
+
+Response :
+
+```json
+{
+  "message": "Welcome to API",
+  "version": "1.0"
+}
+```
+
+Test search dengan query params :
+
+```bash
+curl "http://localhost:8080/search?q=golang&page=2&limit=20"
+```
+
+Response :
+
+```json
+{
+  "query": "golang",
+  "page": 2,
+  "limit": 20,
+  "results": ["Result 1", "Result 2", "Result 3"]
+}
+```
+
+Test profile tanpa token :
+
+```bash
+curl http://localhost:8080/api/profile
+```
+
+Response :
+
+```json
+{
+  "error": "Authorization header required"
+}
+```
+
+Test profile dengan token valid :
+
+```bash
+curl -H "Authorization: Bearer valid-token" http://localhost:8080/api/profile
+```
+
+Response :
+
+```json
+{
+  "message": "Profile retrieved successfully",
+  "user": {
+	"id": 1,
+	"username": "hilmi",
+	"email": "hilmi@mail.com",
+	"is_admin": true
+  }
+}
+```
+
+Test get user by ID :
+
+```bash
+curl -H "Authorization: Bearer valid-token" http://localhost:8080/api/users/5
+```
+
+Response :
+
+```json
+{
+  "message": "User found",
+  "user": {
+	"id": 5,
+	"name": "User 5"
+  }
+}
+```
+
+Test create post :
+
+```bash
+curl -X POST -H "Authorization: Bearer valid-token" \
+  -H "Content-Type: application/json" \
+  -d '{"title":"My First Post","content":"This is the content"}' \
+  http://localhost:8080/api/posts
+```
+
+Response :
+
+```json
+{
+  "message": "Post created successfully",
+  "post": {
+	"title": "My First Post",
+	"content": "This is the content",
+	"author_id": 1,
+	"author_name": "hilmi"
+  }
+}
+```
+
+Test delete user (admin only) :
+
+```bash
+curl -X DELETE -H "Authorization: Bearer valid-token" \
+  http://localhost:8080/api/users/5
+```
+
+Response :
+
+```json
+{
+  "message": "User deleted successfully",
+  "user_id": "5"
+}
+```
+
+Kode dapat diakses di [2.6.4-1-ContextExample.go](../../codes/2/2.6.4/2.6.4-1-ContextExample.go)
+
+### 2.6.5 Context Timeout dan Cancellation
+
+Salah satu fitur penting dari context adalah kemampuan untuk menangani timeout dan cancellation. Ini sangat penting untuk mencegah request yang berjalan terlalu lama.
+
+2.6.5-1-ContextTimeout.go
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"net/http"
+	"time"
+
+	"github.com/gin-gonic/gin"
+)
+
+// Simulasi fungsi yang memakan waktu lama
+func slowDatabaseQuery(ctx context.Context) ([]string, error) {
+	// Channel untuk hasil
+	resultChan := make(chan []string)
+	errChan := make(chan error)
+
+	go func() {
+		// Simulasi query lambat (5 detik)
+		time.Sleep(5 * time.Second)
+		resultChan <- []string{"Data 1", "Data 2", "Data 3"}
+	}()
+
+	// Tunggu hasil atau timeout
+	select {
+	case result := <-resultChan:
+		return result, nil
+	case err := <-errChan:
+		return nil, err
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	}
+}
+
+func main() {
+	r := gin.Default()
+
+	// Endpoint dengan timeout
+	r.GET("/slow", func(c *gin.Context) {
+		// Buat context dengan timeout 3 detik
+		ctx, cancel := context.WithTimeout(c.Request.Context(), 3*time.Second)
+		defer cancel()
+
+		fmt.Println("Starting slow query...")
+
+		// Jalankan query dengan context
+		data, err := slowDatabaseQuery(ctx)
+
+		if err != nil {
+			if err == context.DeadlineExceeded {
+				c.JSON(http.StatusRequestTimeout, gin.H{
+					"error": "Request timeout - query took too long",
+				})
+				return
+			}
+
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Query completed",
+			"data":    data,
+		})
+	})
+
+	// Endpoint dengan timeout yang lebih panjang
+	r.GET("/slow-long", func(c *gin.Context) {
+		// Timeout 10 detik
+		ctx, cancel := context.WithTimeout(c.Request.Context(), 10*time.Second)
+		defer cancel()
+
+		data, err := slowDatabaseQuery(ctx)
+
+		if err != nil {
+			if err == context.DeadlineExceeded {
+				c.JSON(http.StatusRequestTimeout, gin.H{
+					"error": "Request timeout",
+				})
+				return
+			}
+
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Query completed",
+			"data":    data,
+		})
+	})
+
+	r.Run(":8080")
+}
+```
+
+Test endpoint dengan timeout pendek (akan timeout) :
+
+```bash
+curl http://localhost:8080/slow
+```
+
+Response (setelah 3 detik) :
+
+```json
+{
+  "error": "Request timeout - query took too long"
+}
+```
+
+Test endpoint dengan timeout panjang (akan sukses) :
+
+```bash
+curl http://localhost:8080/slow-long
+```
+
+Response (setelah 5 detik) :
+
+```json
+{
+  "message": "Query completed",
+  "data": ["Data 1", "Data 2", "Data 3"]
+}
+```
+
+Kode dapat diakses di [2.6.5-1-ContextTimeout.go](../../codes/2/2.6.5/2.6.5-1-ContextTimeout.go)
+
+### 2.6.6 Best Practices dalam Menggunakan Context
+
+**1. Jangan Simpan Context di Struct**
+
+```go
+// SALAH
+type Service struct {
+	ctx *gin.Context
+}
+
+// BENAR - Pass context sebagai parameter
+type Service struct {}
+
+func (s *Service) DoSomething(c *gin.Context) {
+	// Gunakan context di sini
+}
+```
+
+**2. Gunakan Type Assertion dengan Hati-hati**
+
+```go
+// Bisa panic jika tipe salah
+userID := c.Get("user_id").(int)
+
+// BENAR - Cek tipe terlebih dahulu
+if userID, ok := c.Get("user_id"); ok {
+	if id, ok := userID.(int); ok {
+		// Gunakan id
+	}
+}
+
+// Atau gunakan helper function
+userID := c.GetInt("user_id")
+```
+
+**3. Set Response Header Sebelum Body**
+
+```go
+// BENAR
+c.Header("X-Custom-Header", "value")
+c.JSON(200, gin.H{"message": "OK"})
+
+// SALAH - Header tidak akan terkirim
+c.JSON(200, gin.H{"message": "OK"})
+c.Header("X-Custom-Header", "value")
+```
+
+**4. Gunakan Abort untuk Menghentikan Eksekusi**
+
+```go
+// BENAR
+if !isAuthenticated {
+	c.AbortWithStatusJSON(401, gin.H{"error": "Unauthorized"})
+	return
+}
+
+// SALAH - Handler tetap akan dieksekusi
+if !isAuthenticated {
+	c.JSON(401, gin.H{"error": "Unauthorized"})
+	// Tidak ada return, handler tetap jalan
+}
+```
+
+**5. Simpan Data yang Relevan di Context**
+
+```go
+// BENAR - Data yang dibutuhkan banyak handler
+c.Set("user_id", userID)
+c.Set("request_id", uuid.New().String())
+
+// SALAH - Jangan simpan data besar atau kompleks
+c.Set("entire_database", db) // Jangan lakukan ini
+```
+
+### 2.6.7 Kesimpulan Context
+
+`*gin.Context` adalah jantung dari setiap request handling di Gin. Dengan memahami cara kerja context, Anda bisa :
+
+- Mengambil data dari request dengan berbagai cara
+- Mengirim response dalam berbagai format
+- Menyimpan dan sharing data antar middleware
+- Mengontrol flow eksekusi request
+- Menangani timeout dan cancellation
+
+Context membuat kode menjadi lebih terstruktur, maintainable, dan powerful. Gunakan dengan bijak dan ikuti best practices untuk hasil yang optimal.
+
+## 2.7 Latihan : Membuat Backend Toko Roti "Caelus & March Bakery"
+
+### 2.7.1 Deskripsi Kasus
+
+Caelus dan March adalah sepasang sahabat yang baru saja membuka toko roti bernama **"Caelus & March Bakery"**. Mereka membutuhkan sistem backend untuk mengelola toko roti mereka. Sistem ini akan digunakan oleh:
+
+- **Pelanggan** : Bisa melihat produk, mencari roti, dan memesan.
+- **Staff** : Bisa mengelola pesanan dan melihat stok.
+- **Admin** (Caelus & March) : Bisa mengelola produk, staff, dan semua data toko.
+
+Tugas adalah membangun REST API untuk sistem ini menggunakan Gin Framework dengan menerapkan semua konsep yang telah dipelajari di Bab 2.
+
+### 2.7.2 Spesifikasi Sistem
+
+#### A. Struktur Data
+
+Buat struktur data (struct) berikut:
+
+**1. Product (Produk Roti)**
+```go
+type Product struct {
+	ID          int     `json:"id"`
+	Name        string  `json:"name"`
+	Category    string  `json:"category"`    // "bread", "cake", "pastry"
+	Price       float64 `json:"price"`
+	Stock       int     `json:"stock"`
+	Description string  `json:"description"`
+}
+```
+
+**2. Order (Pesanan)**
+```go
+type Order struct {
+	ID          int       `json:"id"`
+	CustomerName string   `json:"customer_name"`
+	ProductID   int       `json:"product_id"`
+	Quantity    int       `json:"quantity"`
+	TotalPrice  float64   `json:"total_price"`
+	Status      string    `json:"status"`      // "pending", "completed", "cancelled"
+	OrderDate   time.Time `json:"order_date"`
+}
+```
+
+**3. User (untuk autentikasi)**
+```go
+type User struct {
+	ID       int    `json:"id"`
+	Username string `json:"username"`
+	Role     string `json:"role"`            // "customer", "staff", "admin"
+}
+```
+
+#### B. Endpoints yang Harus Dibuat
+
+##### 1. Public Endpoints (Tanpa Autentikasi)
+
+- `GET /` - Welcome message
+- `GET /products` - Melihat semua produk roti
+- `GET /products/:id` - Melihat detail produk berdasarkan ID
+- `GET /products/search` - Mencari produk berdasarkan query parameter `q` dan `category`
+  - Contoh: `/products/search?q=chocolate&category=cake`
+
+##### 2. Customer Endpoints (Membutuhkan Autentikasi Customer/Staff/Admin)
+
+- `POST /orders` - Membuat pesanan baru
+  - Request body:
+	```json
+	{
+	  "customer_name": "string",
+	  "product_id": int,
+	  "quantity": int
+	}
+	```
+  - System harus otomatis menghitung `total_price` berdasarkan harga produk
+  - Status awal order adalah "pending"
+
+- `GET /orders/my` - Melihat pesanan sendiri (filter berdasarkan nama customer)
+
+##### 3. Staff Endpoints (Membutuhkan Autentikasi Staff/Admin)
+
+- `GET /orders` - Melihat semua pesanan
+- `PATCH /orders/:id/status` - Mengubah status pesanan
+  - Request body :
+	```json
+	{
+	  "status": "completed" // atau "cancelled"
+	}
+	```
+- `GET /products/stock` - Melihat produk dengan stok menipis (stock < 10)
+
+##### 4. Admin Endpoints (Membutuhkan Autentikasi Admin)
+
+- `POST /products` - Menambah produk baru
+  - Validasi:
+	- `name` : wajib, minimal 3 karakter
+	- `category` : wajib, harus salah satu dari : "bread", "cake", "pastry"
+	- `price` : wajib, harus lebih dari 0
+	- `stock` : wajib, harus >= 0
+
+- `PUT /products/:id` - Mengubah seluruh data produk
+- `PATCH /products/:id` - Mengubah sebagian data produk (misal hanya update stok)
+- `DELETE /products/:id` - Menghapus produk
+- `DELETE /orders/:id` - Menghapus pesanan
+
+#### C. Middleware yang Harus Diimplementasikan
+
+**1. Logger Middleware**
+- Catat setiap request dengan format :
+  ```
+  [TIMESTAMP] METHOD PATH - IP - Status: CODE - Duration: XXms
+  ```
+
+**2. Authentication Middleware**
+- Cek header `Authorization: Bearer <token>`
+- Token yang valid:
+  - `customer-token-123` → role: customer
+  - `staff-token-456` → role: staff
+  - `admin-token-789` → role: admin
+- Simpan informasi user di context menggunakan `c.Set()`
+
+**3. Role-Based Authorization Middleware**
+- Buat middleware terpisah untuk:
+  - `CustomerOnly()` - Hanya customer, staff, atau admin
+  - `StaffOnly()` - Hanya staff atau admin
+  - `AdminOnly()` - Hanya admin
+
+**4. Rate Limiting Middleware**
+- Batasi request maksimal 20 request per menit per IP untuk endpoint `/products`
+
+#### D. Response Standardization
+
+Semua response harus mengikuti format standar :
+
+**Success Response :**
+```json
+{
+  "success": true,
+  "message": "string",
+  "data": object/array
+}
+```
+
+**Error Response :**
+```json
+{
+  "success": false,
+  "error": "string",
+  "message": "string"
+}
+```
+
+#### E. Validasi yang Harus Dilakukan
+
+1. **Validasi Input** :
+   - Semua POST/PUT request harus divalidasi menggunakan binding tags
+   - Gunakan `ShouldBindJSON()` untuk error handling yang lebih baik
+
+2. **Validasi Business Logic** :
+   - Saat membuat order, cek apakah produk ada dan stok mencukupi
+   - Saat mengubah stok, pastikan tidak boleh kurang dari 0
+   - Saat mengubah status order, hanya boleh dari "pending" ke "completed" atau "cancelled"
+
+3. **Validasi Authorization** :
+   - Customer hanya bisa melihat orderan mereka sendiri
+   - Staff tidak bisa menghapus produk atau order
+   - Admin bisa melakukan semua operasi
+
+### 2.7.3 Kriteria Penilaian
+
+1. **Routing** (20 poin)
+   - Semua endpoints sudah dibuat dengan HTTP method yang tepat
+   - Grouping route dilakukan dengan benar
+
+2. **Request Handling** (20 poin)
+   - Query params, route params, dan body JSON di-handle dengan benar
+   - Validasi input menggunakan binding tags
+   - Error handling yang tepat
+
+3. **Response Handling** (15 poin)
+   - Format response konsisten
+   - HTTP status code yang tepat
+   - Response body informatif
+
+4. **Middleware** (25 poin)
+   - Logger middleware berfungsi
+   - Authentication middleware bekerja dengan benar
+   - Authorization middleware membedakan role dengan tepat
+   - Rate limiting diterapkan
+
+5. **Context Usage** (10 poin)
+   - Data user disimpan dan diambil dari context dengan benar
+   - Context digunakan untuk flow control (Next/Abort)
+
+6. **Code Quality** (10 poin)
+   - Kode terstruktur dan rapi
+   - Fungsi helper untuk response standar
+   - Komentar yang jelas
+
+### 2.7.4 Bonus Challenge
+
+Implementasikan fitur tambahan berikut untuk nilai bonus :
+
+1. **File Upload** (+5 poin)
+   - Endpoint `POST /products/:id/image` untuk upload gambar produk
+   - Validasi: hanya file jpg/png, maksimal 2MB
+
+2. **Custom Error Handler** (+5 poin)
+   - Buat middleware yang menangkap semua error dan format dalam response standar
+
+3. **Request ID Tracking** (+5 poin)
+   - Tambahkan unique request ID di setiap response header
+   - Log request ID di setiap log entry
+
+4. **Pagination** (+5 poin)
+   - Implementasi pagination di endpoint `GET /products` dan `GET /orders`
+   - Query params: `page` dan `limit`
+   - Response header: `X-Total-Count`
+
+### 2.7.5 Cara Pengerjaan
+
+1. Buat file `2.7-1-CaelusMarchBakery.go` baru di folder `codes/2.7`
+2. Implementasikan semua requirements di atas
+3. Test semua endpoint menggunakan curl atau Postman
+4. Pastikan semua validasi dan authorization bekerja
+
+### 2.7.6 Tips Pengerjaan
+
+- Mulai dari routing dasar, lalu tambahkan middleware satu per satu
+- Buat data dummy in-memory terlebih dahulu (slice/map), jangan langsung database
+- Test setiap endpoint setelah dibuat
+- Gunakan helper function untuk response standar
+- Pisahkan middleware ke file terpisah jika kode terlalu panjang
+
+### 2.7.7 Contoh Test Case
+
+Untuk membantu pengerjaan, berikut beberapa contoh test case yang harus berhasil :
+
+**Test 1 : Get all products (public)**
+```bash
+curl http://localhost:8080/products
+# Expected: 200 OK, list semua produk
+```
+
+**Test 2 : Create order tanpa token**
+```bash
+curl -X POST http://localhost:8080/orders \
+  -H "Content-Type: application/json" \
+  -d '{"customer_name":"Budi","product_id":1,"quantity":2}'
+# Expected: 401 Unauthorized
+```
+
+**Test 3 : Create order dengan customer token**
+```bash
+curl -X POST http://localhost:8080/orders \
+  -H "Authorization: Bearer customer-token-123" \
+  -H "Content-Type: application/json" \
+  -d '{"customer_name":"Budi","product_id":1,"quantity":2}'
+# Expected: 201 Created
+```
+
+**Test 4 : Delete product dengan staff token**
+```bash
+curl -X DELETE http://localhost:8080/products/1 \
+  -H "Authorization: Bearer staff-token-456"
+# Expected: 403 Forbidden
+```
+
+**Test 5 : Delete product dengan admin token**
+```bash
+curl -X DELETE http://localhost:8080/products/1 \
+  -H "Authorization: Bearer admin-token-789"
+# Expected: 200 OK
+```
+
+**Test 6 : Search products**
+```bash
+curl "http://localhost:8080/products/search?q=chocolate&category=cake"
+# Expected: 200 OK, produk yang match dengan query
+```
+
+**Test 7 : Rate limiting**
+```bash
+# Kirim 25 request dalam waktu singkat
+for i in {1..25}; do curl http://localhost:8080/products; done
+# Expected: Request ke-21 dan seterusnya mendapat 429 Too Many Requests
+```
+
+Selamat mengerjakan! Latihan ini akan menguji pemahaman Anda terhadap seluruh materi Bab 2.
+
+### 2.7.8 Jawaban Kode
+
+```go
+package main
+
+
+```
