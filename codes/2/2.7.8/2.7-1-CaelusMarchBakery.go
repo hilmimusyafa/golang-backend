@@ -7,6 +7,7 @@ import (
 	"time"
 	"strings"
 
+	"github.com/google/uuid"
 	"github.com/gin-gonic/gin"
 )
 
@@ -62,9 +63,11 @@ type Response struct {
 func main() {
 	router := gin.New()
 
+	router.Use(RequestIDMiddleware())
 	router.Use(LoggingMiddleware())
 	router.Use(AuthMiddleware())
 	router.Use(RateLimitMiddleware())
+	router.Use(RecoveryMiddleware())
 
 	router.GET("/", func(c *gin.Context) {
 		SendSuccessResponse(c, "Welcome to Caelus and March Bakery!", nil)
@@ -174,6 +177,27 @@ func main() {
 		
 		for i, order := range orders {
 			if fmt.Sprintf("%d", order.ID) == id {
+				if newStatus == "" {
+					SendErrorResponse(c, "Status query parameter is required", http.StatusBadRequest)
+					return
+				}
+				if order.Status == "completed" || order.Status == "cancelled" {
+					SendErrorResponse(c, "Cannot change status of a completed or cancelled order", http.StatusBadRequest)
+					return
+				}
+				if newStatus != "pending" && newStatus != "completed" && newStatus != "cancelled" {
+					SendErrorResponse(c, "Invalid status. Allowed values: pending, completed, cancelled", http.StatusBadRequest)
+					return
+				}
+				if newStatus == "cancelled" {
+					// Kembalikan stok produk jika pesanan dibatalkan
+					for j := range products {
+						if products[j].ID == order.ProductID {
+							products[j].Stock += order.Quantity
+							break
+						}
+					}
+				}
 				orders[i].Status = newStatus
 				SendSuccessResponse(c, "Order status updated successfully!", orders[i])
 				return
@@ -197,27 +221,27 @@ func main() {
 
 	router.POST("/products", AdminOnly(), func(c *gin.Context) {
 		var newProduct Product
-		if err := c.ShouldBindJSON(&newProduct); err != nil {
+		if err := c.ShouldBindJSON(&newProduct); err != nil {	
 			SendErrorResponse(c, "Invalid product data", http.StatusBadRequest)
 			return
 		}
 
-		if len(c.Query("name")) < 3 {
+		if len(newProduct.Name) < 3 {
 			SendErrorResponse(c, "Product name must be at least 3 characters long", http.StatusBadRequest)
 			return
 		}
 
-		if c.Query("category") == "" || (c.Query("category") != "bread" && c.Query("category") != "cake" && c.Query("category") != "pastry") {
+		if newProduct.Category == "" || (newProduct.Category != "bread" && newProduct.Category != "cake" && newProduct.Category != "pastry") {
 			SendErrorResponse(c, "Product category must be one of: bread, cake, pastry", http.StatusBadRequest)
 			return
 		}
 
-		if c.Query("price") <= "0" {
+		if newProduct.Price <= 0 {
 			SendErrorResponse(c, "Product price must be greater than 0", http.StatusBadRequest)
 			return
 		}
 
-		if c.Query("stock") < "0" {
+		if newProduct.Stock < 0 {
 			SendErrorResponse(c, "Product stock cannot be negative", http.StatusBadRequest)
 			return
 		}
@@ -241,18 +265,12 @@ func main() {
 					SendErrorResponse(c, "Product stock cannot be negative", http.StatusBadRequest)
 					return
 				}
-
-				if updatedProduct.Status != "completed" && updatedProduct.Status != "cancelled" {
-					SendErrorResponse(c, "Product status must be either 'completed' or 'cancelled'", http.StatusBadRequest)
-					return
-				}
 				
 				products[i].Name = updatedProduct.Name
 				products[i].Category = updatedProduct.Category
 				products[i].Price = updatedProduct.Price
 				products[i].Stock = updatedProduct.Stock
 				products[i].Description = updatedProduct.Description
-				products[i].Status = updatedProduct.Status
 				
 				SendSuccessResponse(c, "Product updated successfully!", products[i])
 				return
@@ -320,10 +338,16 @@ func main() {
 			SendErrorResponse(c, "Invalid image format. Only .jpg and .png are allowed.", http.StatusBadRequest)
 			return
 		}
-		for i, product := range products {
+
+		// Validate file size (max 2MB)
+		if image.Size > 2*1024*1024 {
+			SendErrorResponse(c, "File size exceeds maximum limit of 2MB", http.StatusBadRequest)
+			return
+		}
+		// Only simulate image upload, in real application you would save the file and associate it with the product
+		for _, product := range products {
 			if fmt.Sprintf("%d", product.ID) == id {
-				products[i].Image = image
-				SendSuccessResponse(c, "Product image uploaded successfully!", products[i])
+				SendSuccessResponse(c, "Image uploaded successfully!", nil)
 				return
 			}
 		}
@@ -345,8 +369,13 @@ func LoggingMiddleware() gin.HandlerFunc {
 		ipAddress := c.ClientIP()
 		statusCode := c.Writer.Status()
 		duration := time.Since(startTime)
+		requestID, exists := c.Get("requestID")
+		
+		if !exists {
+			requestID = "unknown"
+		}
 
-		fmt.Printf("[%s] %s %s IP: %s Status: %d Duration: %v\n", timestamp, method, path, ipAddress, statusCode, duration)
+		fmt.Printf("[%s] %s %s ReqID: %s IP: %s Status: %d Duration: %v\n", timestamp, method, path, requestID, ipAddress, statusCode, duration)
 	}
 }
 
@@ -370,30 +399,10 @@ func AuthMiddleware() gin.HandlerFunc {
 	}
 }
 
-func ErrorHandlerMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		c.Next()
-		
-		// Cek apakah ada error yang terjadi
-		if len(c.Errors) > 0 {
-			err := c.Errors.Last()
-			
-			// Tentukan status code berdasarkan jenis error
-			statusCode := http.StatusInternalServerError
-			if c.Writer.Status() != http.StatusOK {
-				statusCode = c.Writer.Status()
-			}
-			
-			// Kirim response error dalam format standar
-			SendErrorResponse(c, err.Error(), statusCode)
-		}
-	}
-}
-
 func CustomerOnly() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userRole, exists := c.Get("userRole")
-		if !exists || (userRole != "" &&userRole != "customer" && userRole != "staff" && userRole != "admin") {
+		if !exists || (userRole != "customer" && userRole != "staff" && userRole != "admin") {
 			SendErrorResponse(c, "Forbidden: Customers only", http.StatusForbidden)
 			c.Abort()
 			return
@@ -447,7 +456,7 @@ func RateLimitMiddleware() gin.HandlerFunc {
 			return
 		}
 		
-		ip := c.Client IP()
+		ip := c.ClientIP()
 		now := time.Now()
 		
 		// Hapus request yang sudah lebih dari 1 menit
@@ -475,6 +484,38 @@ func RateLimitMiddleware() gin.HandlerFunc {
 	}
 }
 
+func RequestIDMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// Generate unique request ID
+		requestID := uuid.New().String()
+		
+		// Set request ID di context
+		c.Set("requestID", requestID)
+		
+		// Set request ID di response header
+		c.Header("X-Request-ID", requestID)
+		
+		c.Next()
+	}
+}
+
+func RecoveryMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		defer func() {
+			if err := recover(); err != nil {
+				// Log the panic
+				requestID, _ := c.Get("requestID")
+				fmt.Printf("[PANIC] ReqID: %v Path: %s Error: %v\n", requestID, c.Request.URL.Path, err)
+				
+				// Send error response
+				SendErrorResponse(c, "Internal server error occurred", http.StatusInternalServerError)
+				c.Abort()
+			}
+		}()
+		c.Next()
+	}
+}
+
 func SendSuccessResponse(c *gin.Context, message string, data interface{}) {
 	c.JSON(http.StatusOK, Response{
 		Success: true,
@@ -484,9 +525,9 @@ func SendSuccessResponse(c *gin.Context, message string, data interface{}) {
 }
 
 func SendErrorResponse(c *gin.Context, message string, statusCode int) {
-	c.JSON(statusCode, Response{
-		Success: false,
-		Message: message,
+	c.JSON(statusCode, gin.H{
+		"success": false,
+		"error":   message,
 	})
 }
 
@@ -497,8 +538,4 @@ func calculateTotalPrice(productID int, quantity int) float64 {
 		}
 	}
 	return 0.0
-}
-
-func containsIgnoreCase(str, substr string) bool {
-	return len(str) >= len(substr) && (str == substr || containsIgnoreCase(str[1:], substr))
 }
